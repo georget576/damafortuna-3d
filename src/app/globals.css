@@ -1,0 +1,257 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Font Loading & Fallbacks
+   ========================================================================== */
+
+@layer base {
+  /* Font fallback system */
+  .font-fallback {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  /* Font display optimization */
+  @font-face {
+    font-family: 'Caveat Brush';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/caveatbrush/v17/LYjAdGP8kkgoTec8zkRgrl1F50.woff2) format('woff2');
+  }
+  
+  @font-face {
+    font-family: 'Just Another Hand';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/justanotherhand/v13/gokH6pCKsK3iGq0yLPoZz8A.woff2) format('woff2');
+  }
+  
+  @font-face {
+    font-family: 'Shadows Into Light';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/shadowsintolight/v13/UcOTjApS_1g2aIx1qWqRZ8DKjQ.woff2) format('woff2');
+  }
+
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 20 14.3% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14.3% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14.3% 4.1%;
+    --primary: 24 9.8% 10%;
+    --primary-foreground: 60 9.1% 97.8%;
+    --secondary: 60 4.8% 95.9%;
+    --secondary-foreground: 24 9.8% 10%;
+    --muted: 60 4.8% 95.9%;
+    --muted-foreground: 25 5.3% 44.7%;
+    --accent: 60 4.8% 95.9%;
+    --accent-foreground: 24 9.8% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 20 5.9% 90%;
+    --input: 20 5.9% 90%;
+    --ring: 20 14.3% 4.1%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 20 14.3% 4.1%;
+    --foreground: 60 9.1% 97.8%;
+    --card: 20 14.3% 4.1%;
+    --card-foreground: 60 9.1% 97.8%;
+    --popover: 20 14.3% 4.1%;
+    --popover-foreground: 60 9.1% 97.8%;
+    --primary: 60 9.1% 97.8%;
+    --primary-foreground: 24 9.8% 10%;
+    --secondary: 12 6.5% 15.1%;
+    --secondary-foreground: 60 9.1% 97.8%;
+    --muted: 12 6.5% 15.1%;
+    --muted-foreground: 24 5.4% 63.9%;
+    --accent: 12 6.5% 15.1%;
+    --accent-foreground: 60 9.1% 97.8%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 60 9.1% 97.8%;
+    --border: 12 6.5% 15.1%;
+    --input: 12 6.5% 15.1%;
+    --ring: 24 5.7% 82.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Mystical Theme Extensions */
+:root {
+  --mystical-gold: 48 100% 50%;
+  --mystical-gold-light: 48 100% 90%;
+  --mystical-gold-dark: 48 100% 40%;
+  --mystical-purple: 275 76% 35%;
+  --mystical-purple-light: 275 76% 65%;
+  --mystical-purple-dark: 275 76% 25%;
+  --mystical-silver: 0 0% 75%;
+  --mystical-amber: 36 100% 50%;
+  --mystical-violet: 273 81% 55%;
+  --mystical-radius: 0.5rem;
+  --mystical-radius-large: 1rem;
+  --mystical-spacing-sm: 0.5rem;
+  --mystical-spacing-md: 1rem;
+  --mystical-spacing-lg: 1.5rem;
+  --mystical-shadow-glow: 0 0 20px hsl(var(--mystical-gold) / 0.5);
+  --mystical-shadow-purple: 0 0 15px hsl(var(--mystical-purple) / 0.3);
+  --mystical-shadow-gold: 0 0 10px hsl(var(--mystical-gold) / 0.4);
+  --mystical-gradient-gold-purple: linear-gradient(135deg, hsl(var(--mystical-gold)), hsl(var(--mystical-purple)));
+  --mystical-gradient-purple-gold: linear-gradient(135deg, hsl(var(--mystical-purple)), hsl(var(--mystical-gold)));
+}
+
+/* Mystical Gradients */
+.mystical-gradient-gold-purple {
+  background: var(--mystical-gradient-gold-purple);
+}
+
+.mystical-gradient-silver-violet {
+  background: linear-gradient(135deg, hsl(var(--mystical-silver)), hsl(var(--mystical-violet)));
+}
+
+/* Mystical Glow Effects */
+.mystical-glow-gold {
+  box-shadow: var(--mystical-shadow-glow);
+}
+
+.mystical-glow-purple {
+  box-shadow: var(--mystical-shadow-purple);
+}
+
+/* Mystical Text Effects */
+.mystical-text-gold {
+  background: var(--mystical-gradient-gold-purple);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mystical-text-purple {
+  background: linear-gradient(135deg, hsl(var(--mystical-purple)), hsl(var(--mystical-purple-dark)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Mystical Background Classes */
+.bg-mystical-glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--mystical-gold) / 0.2);
+}
+
+/* Mystical Animation Classes */
+@keyframes mystical-float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-mystical-float {
+  animation: mystical-float 3s ease-in-out infinite;
+}
+
+@keyframes mystical-glow {
+  0% { box-shadow: 0 0 5px hsl(var(--mystical-gold)); }
+  50% { box-shadow: 0 0 20px hsl(var(--mystical-gold)), 0 0 30px hsl(var(--mystical-purple)); }
+  100% { box-shadow: 0 0 5px hsl(var(--mystical-gold)); }
+}
+
+.animate-mystical-glow {
+  animation: mystical-glow 2s ease-in-out infinite;
+}
+
+/* Mystical Tarot Card Styles */
+.tarot-card {
+  background: linear-gradient(145deg, hsl(var(--mystical-purple-dark)), hsl(var(--mystical-purple)));
+  border: 2px solid hsl(var(--mystical-gold));
+  border-radius: var(--mystical-radius);
+  box-shadow: var(--mystical-shadow-glow);
+  transition: all 0.3s ease;
+}
+
+.tarot-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px hsl(var(--mystical-gold));
+}
+
+.tarot-card-title {
+  color: hsl(var(--mystical-gold));
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.tarot-card-description {
+  color: hsl(var(--mystical-gold-light));
+}
+
+/* Mystical 3D Canvas Container */
+.canvas-container-3d {
+  background: radial-gradient(circle at center, hsl(var(--mystical-purple-light)), hsl(var(--mystical-purple-dark)));
+  border: 2px solid hsl(var(--mystical-gold));
+  border-radius: var(--mystical-radius-large);
+  box-shadow: var(--mystical-shadow-glow);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-container-3d::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: var(--mystical-gradient-gold-purple);
+  border-radius: var(--mystical-radius-large);
+  z-index: -1;
+  opacity: 0.7;
+}
+
+/* Tarot Gold Class */
+.tarot-gold {
+  color: hsl(48 100% 50%);
+  text-shadow: 0 0 10px hsl(48 100% 50% / 0.5);
+}
+
+.tarot-gold:hover {
+  color: hsl(48 100% 60%);
+  text-shadow: 0 0 15px hsl(48 100% 60% / 0.7);
+}
+
+/* Tarot Purple Class */
+.tarot-purple {
+  color: hsl(275, 79%, 77%);
+  text-shadow: 0 0 10px hsla(274, 38%, 66%, 0.5);
+}
+
+.tarot-purple:hover {
+  color: hsl(275 76% 60%);
+  text-shadow: 0 0 15px hsl(275 76% 60% / 0.7);
+}

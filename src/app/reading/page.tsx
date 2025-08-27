@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { generateRandomReading, saveReading } from '@/app/actions/reading-actions'
 import { TarotReader3D } from '@/app/components/TarotReader3D'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ interface ReadingData {
 }
 
 export default function ReadingPage() {
+  const { data: session, status } = useSession()
   const [spreadType, setSpreadType] = useState<SpreadType>('single')
   const [reading, setReading] = useState<ReadingData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -62,6 +64,17 @@ export default function ReadingPage() {
 
   const handleSaveReading = async () => {
     if (!reading) return
+    
+    // Check if user is logged in
+    if (status === 'loading') {
+      toast.info('Checking authentication...')
+      return
+    }
+    
+    if (!session) {
+      toast.error('You must be logged in to save readings')
+      return
+    }
     
     try {
       const result = await saveReading(
@@ -181,8 +194,14 @@ export default function ReadingPage() {
           <div className="mb-8">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold font-caveat-brush tarot-gold">Your {spreadType.toLowerCase()} Reading</h2>
-              <Button onClick={handleSaveReading} className="bg-green-600 hover:bg-green-700 font-just-another-hand text-2xl">
-                Save Reading
+              <Button
+                onClick={handleSaveReading}
+                className={`${status === 'loading' ? 'bg-gray-600' : session ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} font-just-another-hand text-2xl`}
+                disabled={status === 'loading' || !session}
+              >
+                {status === 'loading' ? 'Checking...' :
+                 !session ? 'You must be logged in to save' :
+                 'Save Reading'}
               </Button>
             </div>
             

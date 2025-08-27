@@ -4,6 +4,7 @@ import "./globals.css";
 import Providers from "@/components/Providers";
 import { Toaster } from "sonner";
 import Footer from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/next"
 
 const shadowsIntoLight = Shadows_Into_Light({
   variable: "--font-shadows-into-light",
@@ -44,7 +45,9 @@ export default function RootLayout({
       <body
         className={`${shadowsIntoLight.variable} ${caveatBrush.variable} ${justAnotherHand.variable} antialiased font-sans font-fallback`}
       >
+        <Analytics/>
         <Providers>
+          
           {children}
           <Footer />
           <Toaster />

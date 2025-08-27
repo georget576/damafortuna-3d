@@ -62,12 +62,12 @@ export default function LearnLayout({ children, params }: LearnLayoutProps) {
             </div>
             
             <div className="mt-8 p-4 bg-purple-900/30 rounded-lg border border-purple-700">
-              <h3 className="font-bold mb-2 font-just-another-hand text-purple-200">Quick Navigation</h3>
+              <h3 className="font-bold mb-2 font-just-another-hand text-purple-200 tracking-widest">Quick Navigation</h3>
               <div className="space-y-2 text-sm">
-                <Link href="/reading" className="block text-purple-300 hover:text-purple-100">
+                <Link href="/reading" className="block text-purple-300 hover:text-purple-100 font-just-another-hand tracking-widest">
                   → Start Reading
                 </Link>
-                <Link href="/journal" className="block text-purple-300 hover:text-purple-100">
+                <Link href="/journal" className="block text-purple-300 hover:text-purple-100 font-just-another-hand tracking-widest">
                   → Journal Your Insights
                 </Link>
               </div>

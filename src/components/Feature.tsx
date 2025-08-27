@@ -1,18 +1,20 @@
 "use client"
-
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
   Sparkles,
-  Zap,
   Eye,
-  Heart,
   Star,
   Moon,
-  Gem,
-  Palette,
-  Infinity
+  SquareDashedMousePointer,
+  Infinity,
+  Scale3D,
+  BookOpenText,
+  BookCopy,
+  GraduationCap,
+  Earth,
 } from "lucide-react"
 
 export default function Feature() {
@@ -20,53 +22,53 @@ export default function Feature() {
     {
       title: "3D Tarot Cards",
       description: "Experience tarot like never before with our immersive 3D card animations.",
-      icon: <Gem className="w-8 h-8" />,
-      color: "from-purple-500 to-pink-500",
+      icon: <Scale3D className="w-8 h-8" />,
+      color: "from-purple-500 to-pink-500 text-white",
       gradient: "bg-gradient-to-br from-purple-600/20 to-pink-600/20"
     },
     {
       title: "Interactive Readings",
       description: "Engage with your cards through intuitive gestures and responsive interactions.",
-      icon: <Zap className="w-8 h-8" />,
-      color: "from-pink-500 to-purple-500",
+      icon: <SquareDashedMousePointer className="w-8 h-8" />,
+      color: "from-pink-500 to-purple-500 text-white",
       gradient: "bg-gradient-to-br from-pink-600/20 to-purple-600/20"
     },
     {
       title: "Personalized Insights",
       description: "Receive tailored interpretations based on your unique energy and questions.",
-      icon: <Heart className="w-8 h-8" />,
-      color: "from-purple-500 to-yellow-500",
+      icon: <BookOpenText className="w-8 h-8" />,
+      color: "from-purple-500 to-yellow-500 text-white",
       gradient: "bg-gradient-to-br from-purple-600/20 to-yellow-600/20"
     },
     {
       title: "Journal Integration",
       description: "Track your spiritual journey with our integrated journaling system.",
-      icon: <BookOpen className="w-8 h-8" />,
-      color: "from-yellow-500 to-purple-500",
+      icon: <BookCopy className="w-8 h-8" />,
+      color: "from-yellow-500 to-purple-500 text-white",
       gradient: "bg-gradient-to-br from-yellow-600/20 to-purple-600/20"
     },
     {
       title: "Learning Resources",
       description: "Expand your knowledge with comprehensive guides and tutorials.",
-      icon: <Palette className="w-8 h-8" />,
-      color: "from-purple-500 to-pink-500",
+      icon: <GraduationCap className="w-8 h-8" />,
+      color: "from-purple-500 to-pink-500 text-white",
       gradient: "bg-gradient-to-br from-purple-600/20 to-pink-600/20"
     },
     {
       title: "Community Support",
       description: "Connect with fellow seekers and share your mystical experiences.",
-      icon: <Infinity className="w-8 h-8" />,
-      color: "from-pink-500 to-purple-500",
+      icon: <Earth className="w-8 h-8" />,
+      color: "from-pink-500 to-purple-500 text-white",
       gradient: "bg-gradient-to-br from-pink-600/20 to-purple-600/20"
     }
   ]
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-purple-900/20 to-indigo-900/20">
+    <section className="relative py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-purple-900/20 to-indigo-900/20">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
-          className="absolute top-20 left-20 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
+          className="absolute top-10 left-10 sm:top-20 sm:left-20 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
           animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 15, -15, 0],
@@ -78,7 +80,7 @@ export default function Feature() {
           }}
         />
         <motion.div
-          className="absolute bottom-20 right-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
+          className="absolute bottom-10 right-10 sm:bottom-20 sm:right-20 w-64 h-64 sm:w-96 sm:h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
           animate={{
             scale: [1, 1.3, 1],
             rotate: [0, -15, 15, 0],
@@ -97,26 +99,26 @@ export default function Feature() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16"
         >
           <motion.div
-            className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-purple-300/30 mb-6"
+            className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 sm:px-4 py-2 border border-purple-300/30 mb-4 sm:mb-6"
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
             <Sparkles className="w-4 h-4 text-purple-300" />
-            <span className="text-sm font-medium text-purple-100">Features</span>
+            <span className="text-xl font-medium text-purple-100 font-just-another-hand tracking-widest">Features</span>
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 font-caveat-brush">
             <span className="mystical-text-gold">Magical</span> Experiences
           </h2>
-          <p className="text-xl text-purple-200 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-purple-200 max-w-3xl mx-auto px-4 font-just-another-hand tracking-widest">
             Discover the powerful features that make DamaFortuna your ultimate spiritual companion.
           </p>
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -126,18 +128,18 @@ export default function Feature() {
               viewport={{ once: true, margin: "-100px" }}
               whileHover={{ y: -10 }}
             >
-              <Card className={`${feature.gradient} backdrop-blur-sm border-purple-300/30 p-6 h-full`}>
+              <Card className={`${feature.gradient} backdrop-blur-sm border-purple-300/30 p-4 sm:p-6 h-full`}>
                 <CardContent className="p-0">
                   <div className="flex flex-col items-center text-center">
                     <motion.div
-                      className={`w-16 h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center mb-4`}
+                      className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center mb-3 sm:mb-4`}
                       whileHover={{ rotate: 360, scale: 1.1 }}
                       transition={{ duration: 0.5 }}
                     >
                       {feature.icon}
                     </motion.div>
-                    <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                    <p className="text-purple-200 leading-relaxed">
+                    <h3 className="text-lg sm:text-xl font-semibold text-purple-700 mb-2 sm:mb-3 font-caveat-brush">{feature.title}</h3>
+                    <p className="text-purple-600 leading-relaxed text-sm sm:text-base font-shadows-into-light">
                       {feature.description}
                     </p>
                   </div>
@@ -148,37 +150,37 @@ export default function Feature() {
         </div>
 
         {/* Feature Highlights */}
-        <div className="grid md:grid-cols-2 gap-12 mb-16">
+        <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-8">
+            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-6 sm:p-8">
               <CardContent className="p-0">
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
-                    <Eye className="w-6 h-6 text-white" />
+                <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                    <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">Immersive Experience</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white font-caveat-brush">Immersive Experience</h3>
                 </div>
-                <p className="text-purple-200 mb-6">
-                  Our 3D tarot cards bring ancient wisdom to life with stunning visuals and smooth animations. 
+                <p className="text-purple-800 mb-4 sm:mb-6 text-sm sm:text-base font-shadows-into-light">
+                  Our 3D tarot cards bring ancient wisdom to life with stunning visuals and smooth animations.
                   Each card is meticulously crafted to provide a truly mystical experience.
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-200">High-quality 3D models</span>
+                    <div className="w-2 h-2 bg-purple-200 rounded-full"></div>
+                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">High-quality 3D models</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-200">Smooth card animations</span>
+                    <div className="w-2 h-2 bg-purple-200 rounded-full"></div>
+                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Smooth card animations</span>
                   </div>
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-200">Interactive gestures</span>
+                    <div className="w-2 h-2 bg-purple-200 rounded-full"></div>
+                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Interactive gestures</span>
                   </div>
                 </div>
               </CardContent>
@@ -191,30 +193,30 @@ export default function Feature() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-8">
+            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-6 sm:p-8">
               <CardContent className="p-0">
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-r from-pink-600 to-yellow-600 rounded-full flex items-center justify-center">
-                    <Star className="w-6 h-6 text-white" />
+                <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-pink-600 to-yellow-600 rounded-full flex items-center justify-center">
+                    <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white">Personalized Guidance</h3>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white font-caveat-brush">Personalized Guidance</h3>
                 </div>
-                <p className="text-purple-200 mb-6">
-                  Our AI-powered interpretations provide insights tailored to your unique energy and questions, 
+                <p className="text-purple-700 mb-4 sm:mb-6 text-sm sm:text-base font-shadows-into-light">
+                  Our AI-powered interpretations provide insights tailored to your unique energy and questions,
                   helping you navigate life's journey with confidence and clarity.
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-200">Context-aware readings</span>
+                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Context-aware readings</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-200">Energy-based insights</span>
+                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Energy-based insights</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-200">Actionable guidance</span>
+                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Actionable guidance</span>
                   </div>
                 </div>
               </CardContent>
@@ -228,31 +230,34 @@ export default function Feature() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           viewport={{ once: true, margin: "-100px" }}
-          className="text-center"
+          className="text-center px-4"
         >
-          <div className="inline-flex items-center space-x-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-full px-8 py-4 border border-purple-300/30 mb-8">
+          <div className="inline-flex items-center space-x-3 sm:space-x-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-full px-6 sm:px-8 py-3 sm:py-4 border border-purple-300/30 mb-6 sm:mb-8">
             <motion.div
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 20, repeat: Infinity as any, ease: "linear" }}
             >
-              <Sparkles className="w-6 h-6 text-purple-300" />
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-300" />
             </motion.div>
-            <span className="text-purple-100 font-medium">Ready to begin your mystical journey?</span>
+            <span className="text-purple-100 font-medium text-2xl sm:text-base font-just-another-hand tracking-widest">Ready to seek and unlock your wisdom and intuition?</span>
             <motion.div
               animate={{ rotate: [0, -360] }}
               transition={{ duration: 20, repeat: Infinity as any, ease: "linear" }}
             >
-              <Moon className="w-6 h-6 text-pink-300" />
+              <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-pink-300" />
             </motion.div>
           </div>
-          
+      
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg px-8 py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300"
-            >
-              Start Your Journey
-            </Button>
+            <Link href="/reading">
+              <Button
+                size="lg"
+                className="font-caveat-brush bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Start Your First Reading
+              </Button>
+            </Link>
+            
           </motion.div>
         </motion.div>
       </div>

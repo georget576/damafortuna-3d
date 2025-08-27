@@ -163,22 +163,22 @@ export default function LearnPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
               <div className="bg-gray-800/50 p-4 rounded-lg">
                 <h3 className="font-bold mb-2 font-just-another-hand text-purple-300">78 Cards</h3>
-                <p className="text-sm text-gray-400">Learn the Major and Minor Arcana</p>
+                <p className="text-sm text-gray-400 font-caveat-brush">Learn the Major and Minor Arcana</p>
               </div>
               <div className="bg-gray-800/50 p-4 rounded-lg">
                 <h3 className="font-bold mb-2 font-just-another-hand text-purple-300">Multiple Spreads</h3>
-                <p className="text-sm text-gray-400">Master different reading techniques</p>
+                <p className="text-sm text-gray-400 font-caveat-brush">Master different reading techniques</p>
               </div>
               <div className="bg-gray-800/50 p-4 rounded-lg">
                 <h3 className="font-bold mb-2 font-just-another-hand text-purple-300">Interactive Practice</h3>
-                <p className="text-sm text-gray-400">Test your knowledge with exercises</p>
+                <p className="text-sm text-gray-400 font-caveat-brush">Test your knowledge with exercises</p>
               </div>
             </div>
           </div>
           
           <div className="bg-gray-800/50 p-6 rounded-lg border border-gray-700">
             <h3 className="text-xl font-bold mb-4 font-caveat-brush text-purple-200">Learning Path</h3>
-            <ol className="space-y-3">
+            <ol className="space-y-3 font-just-another-hand tracking-widest">
               <li className="flex items-start">
                 <span className="bg-purple-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3 mt-0.5">1</span>
                 <div>
@@ -225,20 +225,20 @@ export default function LearnPage() {
                 placeholder="Search cards by name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-gray-800 border-gray-700 text-white font-shadows-into-light"
               />
             </div>
-            <div className="w-full sm:w-48">
+            <div className="w-full sm:w-48 font-just-another-hand">
               <Select value={selectedCard?.arcana || ''} onValueChange={(value) => {
                 if (value) {
                   const filtered = allTarotCards.filter(card => card.arcana === value);
                   setSelectedCard(filtered.length > 0 ? filtered[0] : null);
                 }
               }}>
-                <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                <SelectTrigger className="bg-gray-700 border-gray-700 text-white font-just-another-hand tracking-widest">
                   <SelectValue placeholder="Filter by arcana" />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-gray-800 border-gray-700 font-just-another-hand tracking-widest text-white">
                   <SelectItem value="major">Major Arcana</SelectItem>
                   <SelectItem value="minor">Minor Arcana</SelectItem>
                 </SelectContent>
@@ -250,10 +250,10 @@ export default function LearnPage() {
             <div className="lg:col-span-1">
               <Card className="bg-gray-800/50 border-gray-700 max-h-[600px] overflow-y-auto">
                 <CardHeader>
-                  <CardTitle className="font-caveat-brush text-xl">Card Library</CardTitle>
+                  <CardTitle className="font-caveat-brush text-xl text-white">Card Library</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-2">
+                  <div className="space-y-2 font-just-another-hand tracking-widest text-white">
                     {allTarotCards
                       .filter(card => 
                         card.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
@@ -282,8 +282,8 @@ export default function LearnPage() {
               {selectedCard ? (
                 <Card className="bg-gray-800/50 border-gray-700">
                   <CardHeader>
-                    <CardTitle className="font-caveat-brush text-2xl">{selectedCard.name}</CardTitle>
-                    <div className="flex gap-2 mt-2">
+                    <CardTitle className="font-caveat-brush text-2xl text-white">{selectedCard.name}</CardTitle>
+                    <div className="flex gap-2 mt- font-just-another-hand tracking-widest">
                       <span className="px-2 py-1 bg-purple-900/50 text-purple-200 text-xs rounded-full">
                         {selectedCard.arcana}
                       </span>
@@ -308,17 +308,17 @@ export default function LearnPage() {
                       
                       <div className="space-y-4">
                         <div>
-                          <h3 className="font-bold mb-2 text-purple-300">Description</h3>
+                          <h3 className="font-bold mb-2 text-purple-300 font-caveat-brush">Description</h3>
                           <p className="text-gray-300 font-shadows-into-light">{selectedCard.description}</p>
                         </div>
                         
                         <div>
-                          <h3 className="font-bold mb-2 text-purple-300">Keywords</h3>
+                          <h3 className="font-bold mb-2 text-purple-300 font-caveat-brush">Keywords</h3>
                           <div className="flex flex-wrap gap-2">
                             {selectedCard.keywords.map((keyword, index) => (
                               <span 
                                 key={index}
-                                className="px-3 py-1 bg-purple-900/50 text-purple-200 text-sm rounded-full"
+                                className="px-3 py-1 bg-purple-900/50 text-purple-200 text-sm rounded-full font-just-another-hand tracking-widest"
                               >
                                 {keyword}
                               </span>
@@ -327,7 +327,7 @@ export default function LearnPage() {
                         </div>
                         
                         <div>
-                          <h3 className="font-bold mb-2 text-purple-300">Interpretation</h3>
+                          <h3 className="font-bold mb-2 text-purple-300 font-caveat-brush">Interpretation</h3>
                           <p className="text-gray-300 font-shadows-into-light">
                             {selectedCard.arcana === 'major' 
                               ? 'Major Arcana cards represent significant life lessons, karmic influences, and archetypal patterns. They often indicate important life events and spiritual growth.'
@@ -362,15 +362,15 @@ export default function LearnPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="font-caveat-brush text-xl">Single Card</CardTitle>
+                <CardTitle className="font-caveat-brush text-xl text-purple-300">Single Card</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 mb-4 font-shadows-into-light">
                   Perfect for daily guidance, quick insights, or focusing on a specific question.
                 </p>
                 <div className="bg-gray-700/50 p-4 rounded-lg">
-                  <h4 className="font-bold mb-2 text-purple-300">Best for:</h4>
-                  <ul className="text-sm text-gray-400 space-y-1">
+                  <h4 className="font-bold mb-2 text-purple-300 font-caveat-brush">Best for:</h4>
+                  <ul className="text-sm text-gray-400 space-y-1 font-just-another-hand tracking-widest">
                     <li>• Daily guidance</li>
                     <li>• Quick yes/no questions</li>
                     <li>• Focusing on a specific issue</li>
@@ -381,15 +381,15 @@ export default function LearnPage() {
 
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="font-caveat-brush text-xl">Three Card Spread</CardTitle>
+                <CardTitle className="font-caveat-brush text-xl text-purple-300">Three Card Spread</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 mb-4 font-shadows-into-light">
                   Explore past, present, and future, or mind, body, and spirit connections.
                 </p>
                 <div className="bg-gray-700/50 p-4 rounded-lg">
-                  <h4 className="font-bold mb-2 text-purple-300">Best for:</h4>
-                  <ul className="text-sm text-gray-400 space-y-1">
+                  <h4 className="font-bold mb-2 text-purple-300 font-caveat-brush">Best for:</h4>
+                  <ul className="text-sm text-gray-400 space-y-1 font-just-another-hand tracking-widest">
                     <li>• Understanding time progression</li>
                     <li>• Exploring current situation</li>
                     <li>• Decision making</li>
@@ -400,15 +400,15 @@ export default function LearnPage() {
 
             <Card className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="font-caveat-brush text-xl">Celtic Cross</CardTitle>
+                <CardTitle className="font-caveat-brush text-xl text-purple-300">Celtic Cross</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 mb-4 font-shadows-into-light">
                   A comprehensive 10-card spread for deep insight into complex situations.
                 </p>
                 <div className="bg-gray-700/50 p-4 rounded-lg">
-                  <h4 className="font-bold mb-2 text-purple-300">Best for:</h4>
-                  <ul className="text-sm text-gray-400 space-y-1">
+                  <h4 className="font-bold mb-2 text-purple-300 font-caveat-brush">Best for:</h4>
+                  <ul className="text-sm text-gray-400 space-y-1 font-just-another-hand tracking-widest">
                     <li>• Complex situations</li>
                     <li>• Deep self-reflection</li>
                     <li>• Life path questions</li>
@@ -420,10 +420,10 @@ export default function LearnPage() {
 
           <Card className="bg-gray-800/50 border-gray-700">
             <CardHeader>
-              <CardTitle className="font-caveat-brush text-xl">Spread Tips</CardTitle>
+              <CardTitle className="font-caveat-brush text-xl text-purple-300">Spread Tips</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 font-just-another-hand tracking-widest">
                 <div>
                   <h3 className="font-bold mb-3 text-purple-300">Before Reading</h3>
                   <ul className="space-y-2 text-gray-300">
@@ -470,14 +470,14 @@ export default function LearnPage() {
       description: 'Test your tarot knowledge',
       icon: <Lightbulb className="w-5 h-5" />,
       content: (
-        <div className="space-y-6">
+        <div className="space-y-6 font-just-another-hand tracking-widest">
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="w-full sm:w-48">
               <Select value={difficulty} onValueChange={setDifficulty}>
                 <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-gray-800 border-gray-700">
+                <SelectContent className="bg-gray-800 border-gray-700 font-just-another-hand tracking-widest text-white">
                   <SelectItem value="beginner">Beginner</SelectItem>
                   <SelectItem value="intermediate">Intermediate</SelectItem>
                   <SelectItem value="advanced">Advanced</SelectItem>
@@ -494,7 +494,7 @@ export default function LearnPage() {
           </div>
 
           {exerciseCards.length > 0 ? (
-            <Card className="bg-gray-800/50 border-gray-700">
+            <Card className="bg-gray-800/50 border-gray-700 text-purple-300">
               <CardHeader>
                 {exerciseType === 'card' && (
                   <CardTitle className="font-caveat-brush text-2xl">Card Recognition Exercise</CardTitle>
@@ -539,7 +539,7 @@ export default function LearnPage() {
                     </div>
                     
                     <div className="flex gap-2">
-                      <Button onClick={generateExercise} variant="outline">
+                      <Button onClick={generateExercise} variant="outline" className='bg-purple-600'>
                         Next Exercise
                       </Button>
                     </div>

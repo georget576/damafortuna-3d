@@ -85,7 +85,7 @@ export default function HeroSection() {
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
             <Sparkles className="w-4 h-4 text-yellow-300" />
-            <span className="text-sm font-medium text-purple-100">Welcome to DamaFortuna</span>
+            <span className="text-xl font-medium text-purple-100 font-just-another-hand tracking-widest">Welcome to DamaFortuna</span>
           </motion.div>
         </motion.div>
 
@@ -96,7 +96,7 @@ export default function HeroSection() {
           className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6"
         >
           <span className="font-shadows-into-light block">Discover Your</span>
-          <span className="block mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400 bg-clip-text text-transparent">
+          <span className="block font-caveat-brush mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400 bg-clip-text text-transparent">
             Mystical Journey
           </span>
         </motion.h1>
@@ -105,7 +105,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xl md:text-2xl text-purple-200 max-w-3xl mx-auto mb-12 leading-relaxed"
+          className="text-xl font-shadows-into-light md:text-2xl text-purple-200 max-w-3xl mx-auto mb-12 leading-relaxed"
         >
           Explore the ancient wisdom of tarot through immersive 3D experiences. 
           Unlock insights, discover patterns, and connect with your inner guidance.
@@ -121,7 +121,7 @@ export default function HeroSection() {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg px-8 py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                className="font-caveat-brush bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg px-8 py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300 group"
               >
                 Begin Your Reading
                 <motion.div
@@ -139,7 +139,7 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="border-purple-300/30 text-purple-200 hover:text-white hover:bg-purple-800/50 font-semibold text-lg px-8 py-4 rounded-full backdrop-blur-sm transition-all duration-300"
+              className="font-caveat-brush border-purple-300/30 text-purple-500 hover:text-white hover:bg-purple-800/50 font-semibold text-lg px-8 py-4 rounded-full backdrop-blur-sm transition-all duration-300"
             >
               Learn More
             </Button>
@@ -158,7 +158,7 @@ export default function HeroSection() {
             transition={{ duration: 2, repeat: Infinity }}
           >
             <Moon className="w-4 h-4" />
-            <span className="text-sm">Scroll to explore</span>
+            <span className="text-sm font-just-another-hand tracking-widest">Scroll to explore</span>
             <motion.div
               animate={{ y: [0, 5, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}

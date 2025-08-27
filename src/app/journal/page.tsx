@@ -119,7 +119,7 @@ export default function JournalContentPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p>Loading your journal entries...</p>
+          <p className='font-just-another-hand tracking-widest tarot-gold'>Loading your journal entries...</p>
         </div>
       </div>
     )
@@ -160,7 +160,7 @@ export default function JournalContentPage() {
                       <CardTitle className="font-caveat-brush text-2xl tarot-purple">
                         {entry.title || 'Untitled Reading'}
                       </CardTitle>
-                      <CardDescription className="text-gray-400 mt-2 flex items-center gap-2">
+                      <CardDescription className="text-gray-400 mt-2 flex items-center gap-2 font-just-another-hand tracking-widest">
                         <Calendar className="h-4 w-4" />
                         {formatDate(entry.createdAt)}
                       </CardDescription>
@@ -199,14 +199,14 @@ export default function JournalContentPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-just-another-hand text-lg text-purple-300 mb-2">
+                    <h4 className="font-caveat-brush text-lg text-purple-300 mb-2">
                       Spread: {getSpreadTypeDisplay(entry.reading.spreadType)}
                     </h4>
                     <div className="flex flex-wrap gap-2 mb-4">
                       {entry.reading.readingCards.map((card, index) => (
                         <div
                           key={index}
-                          className="px-3 py-1 bg-purple-900/50 text-purple-200 text-sm rounded-full border border-purple-700"
+                          className="px-3 py-1 bg-purple-900/50 text-purple-200 text-sm rounded-full border border-purple-700 font-just-another-hand tracking-widest"
                         >
                           {card.card.name}
                           {card.isReversed && <span className="ml-1 text-red-300">↺</span>}
@@ -218,40 +218,40 @@ export default function JournalContentPage() {
                   {editingEntry === entry.id ? (
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium mb-2">Title</label>
+                        <label className="block text-sm font-medium mb-2 font-just-another-hand text-white tracking-widest">Title</label>
                         <Input
                           value={editForm.title}
                           onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                          className="bg-gray-900/50 border-gray-600 text-white"
+                          className="bg-gray-900/50 border-gray-600 text-white font-just-another-hand tracking-widest"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Interpretation</label>
+                        <label className="block text-sm font-medium mb-2 text-white font-just-another-hand tracking-widest">Interpretation</label>
                         <Textarea
                           value={editForm.notes}
                           onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
-                          className="min-h-[120px] bg-gray-900/50 border-gray-600 text-white"
+                          className="min-h-[120px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Your Notes</label>
+                        <label className="block text-sm font-medium mb-2 text-white font-just-another-hand tracking-widest">Your Notes</label>
                         <Textarea
                           value={editForm.userNotes}
                           onChange={(e) => setEditForm({ ...editForm, userNotes: e.target.value })}
-                          className="min-h-[100px] bg-gray-900/50 border-gray-600 text-white"
+                          className="min-h-[100px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
                         />
                       </div>
                     </div>
                   ) : (
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-just-another-hand text-lg text-purple-300 mb-2">Interpretation</h4>
-                        <p className="text-gray-300 text-sm leading-relaxed">{entry.notes}</p>
+                        <h4 className="font-caveat-brush text-lg text-purple-300 mb-2">Interpretation</h4>
+                        <p className="text-gray-300 text-sm leading-relaxed font-shadows-into-light">{entry.notes}</p>
                       </div>
                       {entry.userNotes && (
                         <div>
-                          <h4 className="font-just-another-hand text-lg text-purple-300 mb-2">Your Reflections</h4>
-                          <p className="text-gray-300 text-sm leading-relaxed">{entry.userNotes}</p>
+                          <h4 className="font-caveat-brush text-lg text-purple-300 mb-2">Your Reflections</h4>
+                          <p className="text-gray-300 text-sm leading-relaxed font-shadows-into-light">{entry.userNotes}</p>
                         </div>
                       )}
                     </div>
@@ -263,7 +263,7 @@ export default function JournalContentPage() {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8">
+            <div className="flex justify-center items-center gap-2 mt-8 font-caveat-brush">
               <Button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -312,7 +312,7 @@ export default function JournalContentPage() {
             </div>
           )}
 
-          <div className="text-center text-gray-400 text-sm mt-4">
+          <div className="text-center text-gray-400 text-xl mt-4 font-just-another-hand tracking-widest">
             Page {currentPage} of {totalPages} • {totalEntries} total entries
           </div>
         </>

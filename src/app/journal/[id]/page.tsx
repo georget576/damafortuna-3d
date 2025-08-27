@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Calendar, Edit, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { getJournalEntry, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
+import Image from 'next/image'
 
 export default function JournalEntryPage() {
   const params = useParams()
@@ -91,13 +92,15 @@ export default function JournalEntryPage() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    })
+    return (
+      <span className="font-just-another-hand tracking-widest">
+        {new Date(dateString).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })}
+      </span>
+    )
   }
 
   const getSpreadTypeDisplay = (spreadType: string) => {
@@ -118,7 +121,7 @@ export default function JournalEntryPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p>Loading journal entry...</p>
+          <p className='font-just-another-hand tracking-widest text-2xl text-purple-200'>Loading journal entry...</p>
         </div>
       </div>
     )
@@ -136,7 +139,7 @@ export default function JournalEntryPage() {
           <Button
             onClick={() => router.push('/journal')}
             variant="outline"
-            className="border-gray-600 bg-purple-700"
+            className="border-gray-600 bg-purple-700 font-caveat-brush"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Journal
@@ -152,7 +155,7 @@ export default function JournalEntryPage() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 font-caveat-brush">
           {editing ? (
             <>
               <Button
@@ -165,7 +168,7 @@ export default function JournalEntryPage() {
               <Button
                 onClick={handleCancelEdit}
                 variant="outline"
-                className="border-gray-600"
+                className="border-gray-600 text-black"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
@@ -175,7 +178,7 @@ export default function JournalEntryPage() {
             <Button
               onClick={() => setEditing(true)}
               variant="outline"
-              className="border-gray-600 bg-purple-700"
+              className="border-gray-600 bg-purple-700 font-caveat-brush"
             >
               <Edit className="h-4 w-4 mr-2" />
               Edit Entry
@@ -193,51 +196,53 @@ export default function JournalEntryPage() {
           {entry.reading.readingCards.map((readingCard, index) => (
             <Card key={index} className="bg-gray-800/50 border-gray-700">
               <CardHeader>
-                <CardTitle className="font-caveat-brush text-xl text-center">
+                <CardTitle className="font-caveat-brush text-xl text-center text-purple-300">
                   {readingCard.card.name}
                   {readingCard.isReversed && (
-                    <span className="ml-2 text-red-300 text-sm">Reversed</span>
+                    <span className="ml-2 text-red-300 text-sm font-just-another-hand tracking-widest">Reversed</span>
                   )}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-center mb-4">
                   {readingCard.card.imageUrl ? (
-                    <img
+                    <Image
                       src={readingCard.card.imageUrl}
                       alt={readingCard.card.name}
+                      width={320}
+                      height={480}
                       className="w-32 h-48 object-contain rounded-lg border border-gray-700"
                     />
                   ) : (
                     <div className="w-32 h-48 bg-gray-900 rounded-lg flex items-center justify-center border border-gray-700">
-                      <span className="text-gray-500 text-sm">No Image</span>
+                      <span className="text-gray-500 text-sm font-just-another-hand tracking-widest">No Image</span>
                     </div>
                   )}
                 </div>
                 
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-semibold text-purple-300 mb-1">Arcana</h4>
-                    <p className="text-sm text-gray-300">{readingCard.card.arcana}</p>
+                    <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Arcana</h4>
+                    <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.arcana}</p>
                   </div>
                   
                   {readingCard.card.suit && (
                     <div>
-                      <h4 className="font-semibold text-purple-300 mb-1">Suit</h4>
-                      <p className="text-sm text-gray-300">{readingCard.card.suit}</p>
+                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Suit</h4>
+                      <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.suit}</p>
                     </div>
                   )}
                   
                   {readingCard.card.number && (
                     <div>
-                      <h4 className="font-semibold text-purple-300 mb-1">Number</h4>
-                      <p className="text-sm text-gray-300">{readingCard.card.number}</p>
+                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Number</h4>
+                      <p className="text-sm text-gray-300 font-just-another-hand">{readingCard.card.number}</p>
                     </div>
                   )}
                   
                   <div>
-                    <h4 className="font-semibold text-purple-300 mb-1">Keywords</h4>
-                    <div className="flex flex-wrap gap-1">
+                    <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Keywords</h4>
+                    <div className="flex flex-wrap gap-1 font-just-another-hand tracking-widest">
                       {readingCard.card.keywords?.map((keyword, i) => (
                         <span
                           key={i}
@@ -264,11 +269,11 @@ export default function JournalEntryPage() {
           <Textarea
             value={editForm.notes}
             onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
-            className="min-h-[200px] bg-gray-900/50 border-gray-600 text-white"
+            className="min-h-[200px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
             placeholder="Enter your interpretation of the reading..."
           />
         ) : (
-          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
+          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 font-shadows-into-light">
             <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
               {entry.notes || 'No interpretation provided.'}
             </p>
@@ -286,11 +291,11 @@ export default function JournalEntryPage() {
             <Textarea
               value={editForm.userNotes}
               onChange={(e) => setEditForm({ ...editForm, userNotes: e.target.value })}
-              className="min-h-[150px] bg-gray-900/50 border-gray-600 text-white"
+              className="min-h-[150px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
               placeholder="Enter your personal notes and reflections..."
             />
           ) : (
-            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
+            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 font-shadows-into-light">
               <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
                 {entry.userNotes}
               </p>

@@ -1,202 +1,332 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { BookOpen, Clock, Star, Heart, Sparkles } from "lucide-react"
+import { useState, useCallback, useMemo } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
 
-export default function Story() {
-  const timeline = [
-    {
-      year: "2018",
-      title: "The Beginning",
-      description: "My journey into tarot reading started with a simple deck and an open heart.",
-      icon: <BookOpen className="w-6 h-6" />,
-      color: "from-purple-500 to-pink-500"
-    },
-    {
-      year: "2020", 
-      title: "Deepening Practice",
-      description: "Years of dedicated study and personal readings shaped my understanding of the cards.",
-      icon: <Heart className="w-6 h-6" />,
-      color: "from-pink-500 to-purple-500"
-    },
-    {
-      year: "2022",
-      title: "Digital Transformation",
-      description: "Bringing ancient wisdom to the digital age through innovative technology.",
-      icon: <Sparkles className="w-6 h-6" />,
-      color: "from-purple-500 to-yellow-500"
-    },
-    {
-      year: "2024",
-      title: "DamaFortuna Born",
-      description: "Creating an immersive 3D tarot experience for spiritual seekers worldwide.",
-      icon: <Star className="w-6 h-6" />,
-      color: "from-yellow-500 to-pink-500"
+// Define types for better type safety
+interface Chapter {
+  id: number
+  title: string
+  subtitle: string
+  description: string
+  image: string
+  color: string
+}
+
+// Constants for configuration
+const CHAPTER_HEIGHT = {
+  DEFAULT: "h-[600px]",
+  MD: "md:h-[700px]"
+}
+
+const ANIMATION_DURATION = {
+  BACKGROUND: 30,
+  BACKGROUND_2: 35,
+  FLIP: 0.6,
+  FADE: 0.8,
+  OVERLAY: 0.8,
+  OVERLAY_DELAY: 0.3,
+  TITLE: 0.5,
+  TITLE_DELAY: 0.5,
+  SUBTITLE: 0.8,
+  SUBTITLE_DELAY: 0.7,
+  DESCRIPTION: 0.8,
+  DESCRIPTION_DELAY: 0.9,
+  INDICATOR: 0.5,
+  CTA: 0.8,
+  CTA_DELAY: 0.8
+}
+
+// Chapter data with proper typing
+const chapters: Chapter[] = [
+  {
+    id: 1,
+    title: "Chapter 1: The Awakening",
+    subtitle: "The Divine Illumination",
+    description: "As the mystical clouds part, a brilliant divine light descends upon you, awakening ancient powers within your soul. This moment marks the beginning of your extraordinary journey into the unknown realms of spiritual enlightenment.",
+    image: "/story/chapter-1.gif",
+    color: "from-purple-600 to-pink-600"
+  },
+  {
+    id: 2,
+    title: "Chapter 2: The Seeker's Path",
+    subtitle: "Wisdom of the High Priestess",
+    description: "You stand before the enigmatic High Priestess, keeper of ancient secrets and mystical knowledge. Her gaze pierces through the veil of reality, offering you profound insights that will guide your quest for higher understanding and spiritual mastery.",
+    image: "/story/chapter-2.gif",
+    color: "from-pink-600 to-purple-600"
+  },
+  {
+    id: 3,
+    title: "Chapter 3: The Destiny Unfolds",
+    subtitle: "Fate's Mysterious Call",
+    description: "The threads of destiny weave around you as cosmic forces align to reveal your true purpose. The universe beckons you forward, promising revelations that will transform your understanding of existence and your place within the grand tapestry of fate.",
+    image: "/story/chapter-3.gif",
+    color: "from-purple-600 to-yellow-600"
+  }
+]
+
+// Memoized navigation controls for better performance
+const NavigationControls = ({ 
+  currentChapter, 
+  totalChapters, 
+  onPrev, 
+  onNext 
+}: { 
+  currentChapter: number
+  totalChapters: number
+  onPrev: () => void
+  onNext: () => void
+}) => {
+  const handleDotClick = useCallback((index: number) => {
+    // Prevent unnecessary re-renders
+    if (index !== currentChapter) {
+      // This would be handled by the parent component
     }
-  ]
+  }, [currentChapter])
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-indigo-900/20 to-purple-900/20">
-      {/* Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute top-20 left-20 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
-          animate={{
-            scale: [1, 1.3, 1],
-            rotate: [0, 10, -10, 0],
-          }}
-          transition={{
-            duration: 30,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
-          animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, -10, 10, 0],
-          }}
-          transition={{
-            duration: 35,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
+    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 z-20">
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={onPrev}
+        className="bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full p-3 text-purple-200 hover:bg-white/20 transition-all duration-300"
+        aria-label="Previous chapter"
+      >
+        <ChevronLeft className="w-6 h-6" />
+      </motion.button>
+
+      <div className="flex space-x-2">
+        {chapters.map((_, index) => (
+          <motion.button
+            key={index}
+            whileHover={{ scale: 1.2 }}
+            onClick={() => handleDotClick(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === currentChapter
+                ? 'bg-purple-400 scale-125'
+                : 'bg-purple-600/50'
+            }`}
+            aria-label={`Go to chapter ${index + 1}`}
+          />
+        ))}
       </div>
 
-      <div className="relative max-w-7xl mx-auto">
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={onNext}
+        className="bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full p-3 text-purple-200 hover:bg-white/20 transition-all duration-300"
+        aria-label="Next chapter"
+      >
+        <ChevronRight className="w-6 h-6" />
+      </motion.button>
+    </div>
+  )
+}
+
+// Memoized chapter content for better performance
+const ChapterContent = ({ chapter }: { chapter: Chapter }) => {
+  const chapterContent = useMemo(() => (
+    <div className="relative w-full h-full flex items-center justify-center">
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-br from-purple-900/30 to-pink-900/30 backdrop-blur-sm rounded-3xl"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: ANIMATION_DURATION.OVERLAY }}
+      />
+      
+      <motion.img
+        src={chapter.image}
+        alt={chapter.title}
+        className="w-full h-full object-cover rounded-3xl shadow-2xl"
+        initial={{ scale: 1.1, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: ANIMATION_DURATION.OVERLAY }}
+        onError={(e) => {
+          // Handle image loading errors
+          const target = e.target as HTMLImageElement
+          target.src = "/fallback-image.jpg" // Add a fallback image
+          target.alt = "Chapter image not available"
+        }}
+      />
+
+      {/* Chapter Overlay Content - Moved to Top */}
+      <div className="absolute inset-0 flex flex-col items-center justify-start p-8 bg-gradient-to-b from-black/70 via-black/30 to-transparent rounded-3xl">
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="text-center mb-16"
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{
+            duration: ANIMATION_DURATION.OVERLAY,
+            delay: ANIMATION_DURATION.OVERLAY_DELAY
+          }}
+          className="text-center w-full"
         >
-          <motion.div
-            className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-purple-300/30 mb-6"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          <motion.h3
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{
+              duration: ANIMATION_DURATION.TITLE,
+              delay: ANIMATION_DURATION.TITLE_DELAY
+            }}
           >
-            <BookOpen className="w-4 h-4 text-purple-300" />
-            <span className="text-sm font-medium text-purple-100">Our Story</span>
-          </motion.div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            The <span className="mystical-text-gold">Mystical Journey</span>
-          </h2>
-          <p className="text-xl text-purple-200 max-w-3xl mx-auto">
-            From ancient wisdom to digital innovation, discover the story behind DamaFortuna and our mission to make spirituality accessible to all.
-          </p>
+            {chapter.title}
+          </motion.h3>
+          <motion.p
+            className="text-xl md:text-2xl lg:text-3xl text-purple-200 mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: ANIMATION_DURATION.SUBTITLE,
+              delay: ANIMATION_DURATION.SUBTITLE_DELAY
+            }}
+          >
+            {chapter.subtitle}
+          </motion.p>
+          <motion.p
+            className="text-lg md:text-xl lg:text-2xl text-purple-100 max-w-3xl mx-auto leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{
+              duration: ANIMATION_DURATION.DESCRIPTION,
+              delay: ANIMATION_DURATION.DESCRIPTION_DELAY
+            }}
+          >
+            {chapter.description}
+          </motion.p>
         </motion.div>
+      </div>
+    </div>
+  ), [chapter])
 
-        {/* Timeline */}
-        <div className="relative">
-          {/* Vertical line */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-purple-500 to-pink-500 opacity-30"></div>
+  return chapterContent
+}
 
-          <div className="space-y-16">
-            {timeline.map((item, index) => (
-              <motion.div
-                key={item.year}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-                viewport={{ once: true, margin: "-100px" }}
-                className={`relative flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}
-              >
-                {/* Timeline dot */}
-                <motion.div
-                  className="absolute left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-r rounded-full flex items-center justify-center z-10"
-                  style={{ background: `linear-gradient(135deg, ${item.color})` }}
-                  whileHover={{ scale: 1.2 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  <div className="w-4 h-4 bg-white rounded-full"></div>
-                </motion.div>
-
-                {/* Content card */}
-                <div className={`w-5/12 ${index % 2 === 0 ? 'pr-8' : 'pl-8'}`}>
-                  <motion.div
-                    whileHover={{ scale: 1.03, y: -5 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  >
-                    <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-6 h-full">
-                      <CardContent className="p-0">
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${item.color} flex items-center justify-center`}>
-                            {item.icon}
-                          </div>
-                          <div>
-                            <div className="flex items-center space-x-2">
-                              <Clock className="w-4 h-4 text-purple-300" />
-                              <span className="text-purple-300 font-medium">{item.year}</span>
-                            </div>
-                            <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                          </div>
-                        </div>
-                        <p className="text-purple-200 leading-relaxed">
-                          {item.description}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </div>
-              </motion.div>
-            ))}
+// Memoized chapter indicators for better performance
+const ChapterIndicators = ({ chapters }: { chapters: Chapter[] }) => {
+  return (
+    <div className="flex justify-center space-x-8 mb-16">
+      {chapters.map((chapter, index) => (
+        <motion.div
+          key={chapter.id}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ 
+            duration: ANIMATION_DURATION.INDICATOR, 
+            delay: index * 0.1 
+          }}
+          viewport={{ once: true }}
+          className="text-center"
+        >
+          <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${chapter.color} flex items-center justify-center mb-2`}>
+            <span className="text-white font-bold text-lg">{index + 1}</span>
           </div>
-        </div>
-
-        {/* Story Quote */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="mt-20 text-center"
-        >
-          <Card className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 backdrop-blur-sm border-purple-300/30 p-8 max-w-4xl mx-auto">
-            <CardContent className="p-0">
-              <blockquote className="text-2xl md:text-3xl font-medium text-white mb-6 italic">
-                "Every card tells a story, every reading reveals a path, and every seeker finds wisdom in their own mystical journey."
-              </blockquote>
-              <div className="flex items-center justify-center space-x-2">
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Star className="w-5 h-5 text-yellow-300" />
-                </motion.div>
-                <span className="text-purple-200">- The Founder of DamaFortuna</span>
-                <motion.div
-                  animate={{ y: [0, 5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Star className="w-5 h-5 text-yellow-300" />
-                </motion.div>
-              </div>
-            </CardContent>
-          </Card>
+          <p className="text-purple-200 text-sm">{chapter.title}</p>
         </motion.div>
+      ))}
+    </div>
+  )
+}
 
-        {/* Call to Action */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          viewport={{ once: true, margin: "-100px" }}
-          className="mt-16 text-center"
-        >
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg px-8 py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300"
+export default function Story() {
+  const [currentChapter, setCurrentChapter] = useState(0)
+
+  // Memoized navigation functions to prevent unnecessary re-renders
+  const nextChapter = useCallback(() => {
+    setCurrentChapter((prev) => (prev + 1) % chapters.length)
+  }, [])
+
+  const prevChapter = useCallback(() => {
+    setCurrentChapter((prev) => (prev - 1 + chapters.length) % chapters.length)
+  }, [])
+
+  // Memoized background elements for better performance
+  const backgroundElements = useMemo(() => (
+    <div className="absolute inset-0 overflow-hidden">
+      <motion.div
+        className="absolute top-20 left-20 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
+        animate={{
+          scale: [1, 1.3, 1],
+          rotate: [0, 10, -10, 0],
+        }}
+        transition={{
+          duration: ANIMATION_DURATION.BACKGROUND,
+          repeat: Infinity,
+          repeatType: "reverse",
+        }}
+      />
+      <motion.div
+        className="absolute bottom-20 right-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-5"
+        animate={{
+          scale: [1, 1.2, 1],
+          rotate: [0, -10, 10, 0],
+        }}
+        transition={{
+          duration: ANIMATION_DURATION.BACKGROUND_2,
+          repeat: Infinity,
+          repeatType: "reverse",
+        }}
+      />
+    </div>
+  ), [])
+
+  // Memoized header content for better performance
+  const headerContent = useMemo(() => (
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: ANIMATION_DURATION.FADE }}
+      viewport={{ once: true, margin: "-100px" }}
+      className="text-center mb-16"
+    >
+      <motion.div
+        className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 border border-purple-300/30 mb-6"
+        whileHover={{ scale: 1.05 }}
+        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+      >
+        <Sparkles className="w-4 h-4 text-purple-300" />
+        <span className="text-xl font-medium text-purple-100 font-just-another-hand tracking-widest">The Mystical Story</span>
+      </motion.div>
+      <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-caveat-brush">
+        Your <span className="mystical-text-gold">Journey</span>
+      </h2>
+      <p className="text-xl text-purple-200 max-w-3xl mx-auto font-just-another-hand tracking-widest">
+        Experience the mystical tale that unfolds before you, chapter by chapter.
+      </p>
+    </motion.div>
+  ), [])
+
+  return (
+    <section className="relative min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-indigo-900/20 to-purple-900/20 overflow-hidden">
+      {backgroundElements}
+
+      <div className="relative max-w-7xl mx-auto">
+        {headerContent}
+
+        {/* Flip Animation Container */}
+        <div className={`relative ${CHAPTER_HEIGHT.DEFAULT} ${CHAPTER_HEIGHT.MD} flex items-center justify-center mb-16 font-shadows-into-light`}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentChapter}
+              initial={{ opacity: 0, rotateY: -90 }}
+              animate={{ opacity: 1, rotateY: 0 }}
+              exit={{ opacity: 0, rotateY: 90 }}
+              transition={{ duration: ANIMATION_DURATION.FLIP }}
+              className="absolute inset-0 flex items-center justify-center"
             >
-              Continue Your Journey
-            </Button>
-          </motion.div>
-        </motion.div>
+              <ChapterContent chapter={chapters[currentChapter]} />
+            </motion.div>
+          </AnimatePresence>
+
+          <NavigationControls
+            currentChapter={currentChapter}
+            totalChapters={chapters.length}
+            onPrev={prevChapter}
+            onNext={nextChapter}
+          />
+        </div>
       </div>
     </section>
   )

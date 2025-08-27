@@ -3,6 +3,7 @@ import { Shadows_Into_Light, Caveat_Brush, Just_Another_Hand } from "next/font/g
 import "./globals.css";
 import Providers from "@/components/Providers";
 import { Toaster } from "sonner";
+import Footer from "@/components/Footer";
 
 const shadowsIntoLight = Shadows_Into_Light({
   variable: "--font-shadows-into-light",
@@ -45,6 +46,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <Footer />
           <Toaster />
         </Providers>
       </body>

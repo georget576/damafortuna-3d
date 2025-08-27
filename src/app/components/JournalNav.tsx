@@ -34,11 +34,15 @@ export function JournalNav({ currentId }: JournalNavProps) {
   }, [])
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    })
+    return (
+      <span className="font-just-another-hand tracking-widest">
+        {new Date(dateString).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })}
+      </span>
+    )
   }
 
   const getSpreadTypeDisplay = (spreadType: string) => {
@@ -58,7 +62,7 @@ export function JournalNav({ currentId }: JournalNavProps) {
     return (
       <div className="text-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
-        <p className="text-gray-400 mt-2">Loading entries...</p>
+        <p className="text-gray-400 mt-2 font-just-another-hand tracking-widest">Loading entries...</p>
       </div>
     )
   }
@@ -73,7 +77,7 @@ export function JournalNav({ currentId }: JournalNavProps) {
       </Link>
 
       <div className="mt-6">
-        <h2 className="text-lg font-semibold mb-4 text-purple-300 font-just-another-hand">
+        <h2 className="text-lg font-semibold mb-4 text-purple-300 font-just-another-hand tracking-widest">
           Journal Entries
         </h2>
         
@@ -83,7 +87,7 @@ export function JournalNav({ currentId }: JournalNavProps) {
             <p className="text-sm mt-2">Create your first reading!</p>
           </div>
         ) : (
-          <div className="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
             {entries.map((entry) => (
               <Link key={entry.id} href={`/journal/${entry.id}`}>
                 <Card 
@@ -93,7 +97,7 @@ export function JournalNav({ currentId }: JournalNavProps) {
                 >
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
-                      <CardTitle className="font-caveat-brush text-lg truncate">
+                      <CardTitle className="font-caveat-brush text-lg truncate text-white">
                         {entry.title || 'Untitled Reading'}
                       </CardTitle>
                       <CardDescription className="text-xs text-gray-400 ml-2 flex-shrink-0">
@@ -108,16 +112,16 @@ export function JournalNav({ currentId }: JournalNavProps) {
                     </div>
                     <div className="flex flex-wrap gap-1 mt-2">
                       {entry.reading.readingCards.slice(0, 3).map((card, index) => (
-                        <span 
+                        <span
                           key={index}
-                          className="text-xs px-2 py-1 bg-purple-900/30 text-purple-200 rounded-full border border-purple-700"
+                          className="text-xs px-2 py-1 bg-purple-900/30 text-purple-200 rounded-full border border-purple-700 font-just-another-hand tracking-widest"
                         >
                           {card.card.name}
                           {card.isReversed && <span className="ml-1 text-red-300">↺</span>}
                         </span>
                       ))}
                       {entry.reading.readingCards.length > 3 && (
-                        <span className="text-xs px-2 py-1 bg-gray-700 text-gray-400 rounded-full">
+                        <span className="text-xl px-2 py-1 bg-gray-700 text-gray-400 rounded-full font-just-another-hand tracking-widest">
                           +{entry.reading.readingCards.length - 3} more
                         </span>
                       )}

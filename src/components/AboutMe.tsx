@@ -50,12 +50,12 @@ export default function AboutMe() {
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
             <User className="w-4 h-4 text-purple-300" />
-            <span className="text-sm font-medium text-purple-100">About the Creator</span>
+            <span className="text-xl font-medium text-purple-100 font-just-another-hand tracking-widest">About the Creator</span>
           </motion.div>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-caveat-brush">
             Meet Your <span className="mystical-text-gold">Mystical Guide</span>
           </h2>
-          <p className="text-xl text-purple-200 max-w-3xl mx-auto">
+          <p className="text-xl text-purple-200 max-w-3xl mx-auto font-just-another-hand tracking-widest">
             A passionate spiritual seeker and technology enthusiast on a mission to make ancient wisdom accessible in the modern world.
           </p>
         </motion.div>
@@ -97,8 +97,8 @@ export default function AboutMe() {
                   </motion.div>
                 </div>
                 <div className="text-center mt-4">
-                  <h3 className="text-2xl font-bold text-white mb-1">George Tan</h3>
-                  <p className="text-purple-200">Spiritual Seeker</p>
+                  <h3 className="text-2xl font-bold text-white mb-1 font-shadows-into-light">George Tan</h3>
+                  <p className="text-purple-200 font-just-another-hand tracking-widest">Spiritual Seeker</p>
                 </div>
               </div>
               
@@ -137,9 +137,9 @@ export default function AboutMe() {
                       <div className="w-12 h-12 bg-purple-600/20 rounded-full flex items-center justify-center">
                         <Heart className="w-6 h-6 text-purple-300" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white">Passion for Spirituality</h3>
+                      <h3 className="text-xl font-semibold text-white font-caveat-brush">Passion for Spirituality</h3>
                     </div>
-                    <p className="text-purple-200">
+                    <p className="text-purple-100 font-shadows-into-light tracking-wide">
                       With over a decade of experience in tarot reading and spiritual practices, I bring ancient wisdom to the digital age.
                     </p>
                   </CardContent>
@@ -156,9 +156,9 @@ export default function AboutMe() {
                       <div className="w-12 h-12 bg-pink-600/20 rounded-full flex items-center justify-center">
                         <Sparkles className="w-6 h-6 text-pink-300" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white">Tech Innovation</h3>
+                      <h3 className="text-xl font-semibold text-white font-caveat-brush">Tech Innovation</h3>
                     </div>
-                    <p className="text-purple-200">
+                    <p className="text-purple-100 font-shadows-into-light tracking-wide">
                       Combining cutting-edge technology with spiritual practices to create immersive and transformative experiences.
                     </p>
                   </CardContent>
@@ -175,9 +175,9 @@ export default function AboutMe() {
                       <div className="w-12 h-12 bg-yellow-600/20 rounded-full flex items-center justify-center">
                         <Moon className="w-6 h-6 text-yellow-300" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white">Mission</h3>
+                      <h3 className="text-xl font-semibold text-white font-caveat-brush">Mission</h3>
                     </div>
-                    <p className="text-purple-200">
+                    <p className="text-purple-100 font-shadows-into-light tracking-wide">
                       To help individuals discover their inner wisdom and navigate life's journey through the mystical arts.
                     </p>
                   </CardContent>
@@ -201,7 +201,7 @@ export default function AboutMe() {
             >
               <Heart className="w-6 h-6 text-purple-300" />
             </motion.div>
-            <span className="text-purple-100 font-medium">Dedicated to your spiritual journey</span>
+            <span className="text-purple-100 font-medium font-just-another-hand tracking-widest text-xl">Dedicated to unlocking wisdom</span>
             <motion.div
               animate={{ rotate: [0, -360] }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}

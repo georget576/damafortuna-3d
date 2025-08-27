@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "./database"
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
+import { passwordService } from "./password"
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -18,16 +19,44 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        // In a real app, you would validate credentials against your database
-        // For now, we'll allow any email/password combination for demo purposes
-        if (credentials?.email && credentials?.password) {
-          return {
-            id: "demo-user",
-            email: credentials.email,
-            name: "Demo User"
-          }
+        if (!credentials?.email || !credentials?.password) {
+          return null
         }
-        return null
+
+        try {
+          // Find user by email
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
+            }
+          })
+
+          if (!user || !user.password) {
+            return null
+          }
+
+          // Verify password
+          const isPasswordValid = await passwordService.verifyPassword(
+            credentials.password,
+            user.password
+          )
+
+          if (!isPasswordValid) {
+            return null
+          }
+
+          // Return user object without password
+          const { password, ...userWithoutPassword } = user
+          return {
+            ...userWithoutPassword,
+            id: user.id,
+            email: user.email,
+            name: user.name || user.email
+          }
+        } catch (error) {
+          console.error('Authentication error:', error)
+          return null
+        }
       }
     })
   ],
@@ -37,5 +66,19 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout"
+  },
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Ensure HTTPS for production environments
+      const secureBaseUrl = process.env.NODE_ENV === 'production'
+        ? baseUrl.replace('http://', 'https://')
+        : baseUrl
+        
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${secureBaseUrl}${url}`
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === secureBaseUrl) return url
+      return secureBaseUrl
+    }
   }
 }

@@ -16,7 +16,7 @@ interface Chapter {
 
 // Constants for configuration
 const CHAPTER_HEIGHT = {
-  DEFAULT: "h-[600px]",
+  DEFAULT: "h-[500px] sm:h-[600px]",
   MD: "md:h-[700px]"
 }
 
@@ -86,24 +86,24 @@ const NavigationControls = ({
   }, [currentChapter])
 
   return (
-    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-4 z-20">
+    <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 sm:space-x-4 z-20">
       <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onPrev}
-        className="bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full p-3 text-purple-200 hover:bg-white/20 transition-all duration-300"
+        className="bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full p-2 sm:p-3 text-purple-200 hover:bg-white/20 transition-all duration-300"
         aria-label="Previous chapter"
       >
-        <ChevronLeft className="w-6 h-6" />
+        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
       </motion.button>
 
-      <div className="flex space-x-2">
+      <div className="flex space-x-1 sm:space-x-2">
         {chapters.map((_, index) => (
           <motion.button
             key={index}
             whileHover={{ scale: 1.2 }}
             onClick={() => handleDotClick(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
               index === currentChapter
                 ? 'bg-purple-400 scale-125'
                 : 'bg-purple-600/50'
@@ -117,10 +117,10 @@ const NavigationControls = ({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onNext}
-        className="bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full p-3 text-purple-200 hover:bg-white/20 transition-all duration-300"
+        className="bg-white/10 backdrop-blur-sm border border-purple-300/30 rounded-full p-2 sm:p-3 text-purple-200 hover:bg-white/20 transition-all duration-300"
         aria-label="Next chapter"
       >
-        <ChevronRight className="w-6 h-6" />
+        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
       </motion.button>
     </div>
   )
@@ -164,7 +164,7 @@ const ChapterContent = ({ chapter }: { chapter: Chapter }) => {
           className="text-center w-full"
         >
           <motion.h3
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{
@@ -175,7 +175,7 @@ const ChapterContent = ({ chapter }: { chapter: Chapter }) => {
             {chapter.title}
           </motion.h3>
           <motion.p
-            className="text-xl md:text-2xl lg:text-3xl text-purple-200 mb-6"
+            className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-purple-200 mb-4 sm:mb-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{
@@ -186,7 +186,7 @@ const ChapterContent = ({ chapter }: { chapter: Chapter }) => {
             {chapter.subtitle}
           </motion.p>
           <motion.p
-            className="text-lg md:text-xl lg:text-2xl text-purple-100 max-w-3xl mx-auto leading-relaxed"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-purple-100 max-w-3xl mx-auto leading-relaxed px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{
@@ -207,23 +207,23 @@ const ChapterContent = ({ chapter }: { chapter: Chapter }) => {
 // Memoized chapter indicators for better performance
 const ChapterIndicators = ({ chapters }: { chapters: Chapter[] }) => {
   return (
-    <div className="flex justify-center space-x-8 mb-16">
+    <div className="flex justify-center space-x-4 sm:space-x-8 mb-12 sm:mb-16">
       {chapters.map((chapter, index) => (
         <motion.div
           key={chapter.id}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ 
-            duration: ANIMATION_DURATION.INDICATOR, 
-            delay: index * 0.1 
+          transition={{
+            duration: ANIMATION_DURATION.INDICATOR,
+            delay: index * 0.1
           }}
           viewport={{ once: true }}
           className="text-center"
         >
-          <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${chapter.color} flex items-center justify-center mb-2`}>
-            <span className="text-white font-bold text-lg">{index + 1}</span>
+          <div className={`w-12 sm:w-16 h-12 sm:h-16 rounded-full bg-gradient-to-r ${chapter.color} flex items-center justify-center mb-2`}>
+            <span className="text-white font-bold text-base sm:text-lg">{index + 1}</span>
           </div>
-          <p className="text-purple-200 text-sm">{chapter.title}</p>
+          <p className="text-purple-200 text-xs sm:text-sm hidden sm:block">{chapter.title.split(':')[0]}</p>
         </motion.div>
       ))}
     </div>
@@ -289,10 +289,10 @@ export default function Story() {
         <Sparkles className="w-4 h-4 text-purple-300" />
         <span className="text-xl font-medium text-purple-100 font-just-another-hand tracking-widest">The Mystical Story</span>
       </motion.div>
-      <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-caveat-brush">
+      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 font-caveat-brush">
         Your <span className="mystical-text-gold">Journey</span>
       </h2>
-      <p className="text-xl text-purple-200 max-w-3xl mx-auto font-just-another-hand tracking-widest">
+      <p className="text-base sm:text-lg md:text-xl text-purple-200 max-w-3xl mx-auto px-4 font-just-another-hand tracking-widest">
         Experience the mystical tale that unfolds before you, chapter by chapter.
       </p>
     </motion.div>

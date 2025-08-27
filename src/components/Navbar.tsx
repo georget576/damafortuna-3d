@@ -26,7 +26,7 @@ export default function Navbar() {
                 className="w-full h-full object-cover"
               />
               <span className="text-xl font-bold text-gray-900 font-shadows-into-light hidden sm:block">DamaFortuna</span>
-              <span className="text-lg font-bold text-gray-900 font-shadows-into-light sm:hidden">DF</span>
+              <span className="text-lg font-bold text-gray-900 font-shadows-into-light sm:hidden">DamaFortuna</span>
             </Link>
           </div>
 

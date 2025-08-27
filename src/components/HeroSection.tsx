@@ -11,7 +11,7 @@ export default function HeroSection() {
       {/* Background Elements */}
       <div className="absolute inset-0">
         <motion.div
-          className="absolute top-20 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
+          className="absolute top-10 sm:top-20 left-10 sm:left-20 w-48 sm:w-72 h-48 sm:h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
           animate={{
             x: [0, 100, 0],
             y: [0, -100, 0],
@@ -23,7 +23,7 @@ export default function HeroSection() {
           }}
         />
         <motion.div
-          className="absolute top-40 right-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
+          className="absolute top-20 sm:top-40 right-10 sm:right-20 w-48 sm:w-72 h-48 sm:h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
           animate={{
             x: [0, -100, 0],
             y: [0, 100, 0],
@@ -35,7 +35,7 @@ export default function HeroSection() {
           }}
         />
         <motion.div
-          className="absolute bottom-20 left-1/2 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
+          className="absolute bottom-10 sm:bottom-20 left-1/2 w-48 sm:w-72 h-48 sm:h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20"
           animate={{
             x: [0, 50, 0],
             y: [0, -50, 0],
@@ -48,8 +48,8 @@ export default function HeroSection() {
         />
       </div>
 
-      {/* Floating Stars */}
-      {[...Array(20)].map((_, i) => (
+      {/* Floating Stars - Reduced count for mobile */}
+      {[...Array(12)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute text-white"
@@ -58,7 +58,7 @@ export default function HeroSection() {
             top: `${Math.random() * 100}%`,
           }}
           animate={{
-            y: [0, -20, 0],
+            y: [0, -15, 0],
             opacity: [0.3, 1, 0.3],
           }}
           transition={{
@@ -67,7 +67,7 @@ export default function HeroSection() {
             delay: Math.random() * 2,
           }}
         >
-          <Star className="w-2 h-2" />
+          <Star className="w-1.5 h-1.5 sm:w-2 sm:h-2" />
         </motion.div>
       ))}
 
@@ -93,7 +93,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6"
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-4 sm:mb-6"
         >
           <span className="font-shadows-into-light block">Discover Your</span>
           <span className="block font-caveat-brush mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-400 bg-clip-text text-transparent">
@@ -105,9 +105,9 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="text-xl font-shadows-into-light md:text-2xl text-purple-200 max-w-3xl mx-auto mb-12 leading-relaxed"
+          className="text-base sm:text-lg md:text-xl font-shadows-into-light text-purple-200 max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed px-4"
         >
-          Explore the ancient wisdom of tarot through immersive 3D experiences. 
+          Explore the ancient wisdom of tarot through immersive 3D experiences.
           Unlock insights, discover patterns, and connect with your inner guidance.
         </motion.p>
 
@@ -115,13 +115,13 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4"
         >
           <Link href="/reading">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 size="lg"
-                className="font-caveat-brush bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg px-8 py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                className="font-caveat-brush bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300 group"
               >
                 Begin Your Reading
                 <motion.div
@@ -129,7 +129,7 @@ export default function HeroSection() {
                   animate={{ x: [0, 5, 0] }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
-                  <ArrowRight className="w-5 h-5" />
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </motion.div>
               </Button>
             </motion.div>
@@ -141,7 +141,7 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="font-caveat-brush border-purple-300/30 text-purple-500 hover:text-white hover:bg-purple-800/50 font-semibold text-lg px-8 py-4 rounded-full backdrop-blur-sm transition-all duration-300"
+              className="font-caveat-brush border-purple-300/30 text-purple-500 hover:text-white hover:bg-purple-800/50 font-semibold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full backdrop-blur-sm transition-all duration-300"
             >
               Learn More
             </Button>

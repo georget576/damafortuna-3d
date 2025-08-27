@@ -60,7 +60,7 @@ export default function AboutMe() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-start mb-12 md:mb-16">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -68,10 +68,10 @@ export default function AboutMe() {
             viewport={{ once: true, margin: "-100px" }}
           >
             <div className="relative">
-              <div className="w-64 h-64 mx-auto rounded-full bg-gradient-to-br from-purple-600 to-pink-600 p-1">
+              <div className="w-48 sm:w-56 md:w-64 h-48 sm:h-56 md:h-64 mx-auto rounded-full bg-gradient-to-br from-purple-600 to-pink-600 p-1">
                 <div className="w-full h-full rounded-full bg-gray-900 flex items-center justify-center overflow-hidden">
                   <motion.div
-                    className="w-60 h-60 rounded-full bg-gradient-to-br from-purple-700 to-pink-700 flex items-center justify-center"
+                    className="w-44 sm:w-52 md:w-60 h-44 sm:h-52 md:h-60 rounded-full bg-gradient-to-br from-purple-700 to-pink-700 flex items-center justify-center"
                     whileHover={{
                       boxShadow: [
                         "0 0 0px rgba(192, 132, 252, 0)",
@@ -96,26 +96,26 @@ export default function AboutMe() {
                     />
                   </motion.div>
                 </div>
-                <div className="text-center mt-4">
-                  <h3 className="text-2xl font-bold text-white mb-1 font-shadows-into-light">George Tan</h3>
-                  <p className="text-purple-200 font-just-another-hand tracking-widest">Spiritual Seeker</p>
+                <div className="text-center mt-3 sm:mt-4 mb-4 sm:mb-6">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4 font-shadows-into-light">George Tan</h3>
+                  <p className="text-purple-200 font-just-another-hand tracking-widest text-sm sm:text-base mb-3 sm:mb-4">Spiritual Seeker</p>
                 </div>
               </div>
               
-              {/* Floating elements around the profile */}
+              {/* Floating elements around the profile - adjusted for mobile */}
               <motion.div
-                className="absolute -top-4 -right-4 w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center"
-                animate={{ y: [0, -10, 0] }}
+                className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 w-8 sm:w-12 h-8 sm:h-12 bg-yellow-500 rounded-full flex items-center justify-center"
+                animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Sparkles className="w-6 h-6 text-white" />
+                <Sparkles className="w-4 sm:w-6 h-4 sm:h-6 text-white" />
               </motion.div>
               <motion.div
-                className="absolute -bottom-4 -left-4 w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center"
-                animate={{ y: [0, 10, 0] }}
+                className="absolute -bottom-3 sm:-bottom-4 -left-3 sm:-left-4 w-8 sm:w-12 h-8 sm:h-12 bg-purple-500 rounded-full flex items-center justify-center"
+                animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
               >
-                <Moon className="w-6 h-6 text-white" />
+                <Moon className="w-4 sm:w-6 h-4 sm:h-6 text-white" />
               </motion.div>
             </div>
           </motion.div>
@@ -126,7 +126,7 @@ export default function AboutMe() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <div className="space-y-6">
+            <div className="space-y-6 mt-4 sm:mt-6">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -137,7 +137,7 @@ export default function AboutMe() {
                       <div className="w-12 h-12 bg-purple-600/20 rounded-full flex items-center justify-center">
                         <Heart className="w-6 h-6 text-purple-300" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white font-caveat-brush">Passion for Spirituality</h3>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white font-caveat-brush">Passion for Spirituality</h3>
                     </div>
                     <p className="text-purple-100 font-shadows-into-light tracking-wide">
                       With over a decade of experience in tarot reading and spiritual practices, I bring ancient wisdom to the digital age.
@@ -156,7 +156,7 @@ export default function AboutMe() {
                       <div className="w-12 h-12 bg-pink-600/20 rounded-full flex items-center justify-center">
                         <Sparkles className="w-6 h-6 text-pink-300" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white font-caveat-brush">Tech Innovation</h3>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white font-caveat-brush">Tech Innovation</h3>
                     </div>
                     <p className="text-purple-100 font-shadows-into-light tracking-wide">
                       Combining cutting-edge technology with spiritual practices to create immersive and transformative experiences.
@@ -175,7 +175,7 @@ export default function AboutMe() {
                       <div className="w-12 h-12 bg-yellow-600/20 rounded-full flex items-center justify-center">
                         <Moon className="w-6 h-6 text-yellow-300" />
                       </div>
-                      <h3 className="text-xl font-semibold text-white font-caveat-brush">Mission</h3>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white font-caveat-brush">Mission</h3>
                     </div>
                     <p className="text-purple-100 font-shadows-into-light tracking-wide">
                       To help individuals discover their inner wisdom and navigate life's journey through the mystical arts.
@@ -201,7 +201,7 @@ export default function AboutMe() {
             >
               <Heart className="w-6 h-6 text-purple-300" />
             </motion.div>
-            <span className="text-purple-100 font-medium font-just-another-hand tracking-widest text-xl">Dedicated to unlocking wisdom</span>
+            <span className="text-purple-100 font-medium font-just-another-hand tracking-widest text-lg sm:text-xl">Dedicated to unlocking wisdom</span>
             <motion.div
               animate={{ rotate: [0, -360] }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}

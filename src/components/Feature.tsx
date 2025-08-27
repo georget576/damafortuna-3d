@@ -118,7 +118,7 @@ export default function Feature() {
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -128,18 +128,18 @@ export default function Feature() {
               viewport={{ once: true, margin: "-100px" }}
               whileHover={{ y: -10 }}
             >
-              <Card className={`${feature.gradient} backdrop-blur-sm border-purple-300/30 p-4 sm:p-6 h-full`}>
+              <Card className={`${feature.gradient} backdrop-blur-sm border-purple-300/30 p-3 sm:p-4 h-full`}>
                 <CardContent className="p-0">
                   <div className="flex flex-col items-center text-center">
                     <motion.div
-                      className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center mb-3 sm:mb-4`}
+                      className={`w-10 h-10 sm:w-12 sm:h-16 rounded-full bg-gradient-to-r ${feature.color} flex items-center justify-center mb-2 sm:mb-3`}
                       whileHover={{ rotate: 360, scale: 1.1 }}
                       transition={{ duration: 0.5 }}
                     >
                       {feature.icon}
                     </motion.div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-purple-700 mb-2 sm:mb-3 font-caveat-brush">{feature.title}</h3>
-                    <p className="text-purple-600 leading-relaxed text-sm sm:text-base font-shadows-into-light">
+                    <h3 className="text-base sm:text-lg font-semibold text-purple-700 mb-1 sm:mb-2 font-caveat-brush">{feature.title}</h3>
+                    <p className="text-purple-600 leading-relaxed text-xs sm:text-sm font-shadows-into-light">
                       {feature.description}
                     </p>
                   </div>
@@ -150,37 +150,37 @@ export default function Feature() {
         </div>
 
         {/* Feature Highlights */}
-        <div className="grid md:grid-cols-2 gap-8 sm:gap-12 mb-12 sm:mb-16">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-12">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-6 sm:p-8">
+            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-4 sm:p-6">
               <CardContent className="p-0">
-                <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
-                    <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                    <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-white font-caveat-brush">Immersive Experience</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-white font-caveat-brush">Immersive Experience</h3>
                 </div>
-                <p className="text-purple-800 mb-4 sm:mb-6 text-sm sm:text-base font-shadows-into-light">
+                <p className="text-purple-800 mb-3 sm:mb-4 text-xs sm:text-sm font-shadows-into-light">
                   Our 3D tarot cards bring ancient wisdom to life with stunning visuals and smooth animations.
                   Each card is meticulously crafted to provide a truly mystical experience.
                 </p>
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-200 rounded-full"></div>
-                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">High-quality 3D models</span>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 bg-purple-200 rounded-full"></div>
+                    <span className="text-purple-100 text-xs sm:text-sm font-just-another-hand tracking-widest">High-quality 3D models</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-200 rounded-full"></div>
-                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Smooth card animations</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 bg-purple-200 rounded-full"></div>
+                    <span className="text-purple-100 text-xs sm:text-sm font-just-another-hand tracking-widest">Smooth card animations</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-200 rounded-full"></div>
-                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Interactive gestures</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 bg-purple-200 rounded-full"></div>
+                    <span className="text-purple-100 text-xs sm:text-sm font-just-another-hand tracking-widest">Interactive gestures</span>
                   </div>
                 </div>
               </CardContent>
@@ -193,30 +193,30 @@ export default function Feature() {
             transition={{ duration: 0.8, delay: 0.4 }}
             viewport={{ once: true, margin: "-100px" }}
           >
-            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-6 sm:p-8">
+            <Card className="bg-white/5 backdrop-blur-sm border-purple-300/30 p-4 sm:p-6">
               <CardContent className="p-0">
-                <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-pink-600 to-yellow-600 rounded-full flex items-center justify-center">
-                    <Star className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                <div className="flex items-center space-x-2 sm:space-x-3 mb-3 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-pink-600 to-yellow-600 rounded-full flex items-center justify-center">
+                    <Star className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-white font-caveat-brush">Personalized Guidance</h3>
+                  <h3 className="text-lg sm:text-xl font-bold text-white font-caveat-brush">Personalized Guidance</h3>
                 </div>
-                <p className="text-purple-700 mb-4 sm:mb-6 text-sm sm:text-base font-shadows-into-light">
+                <p className="text-purple-700 mb-3 sm:mb-4 text-xs sm:text-sm font-shadows-into-light">
                   Our AI-powered interpretations provide insights tailored to your unique energy and questions,
                   helping you navigate life's journey with confidence and clarity.
                 </p>
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Context-aware readings</span>
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                    <span className="text-purple-100 text-xs sm:text-sm font-just-another-hand tracking-widest">Context-aware readings</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Energy-based insights</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                    <span className="text-purple-100 text-xs sm:text-sm font-just-another-hand tracking-widest">Energy-based insights</span>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                    <span className="text-purple-100 text-sm sm:text-base font-just-another-hand tracking-widest">Actionable guidance</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-1.5 h-1.5 bg-purple-400 rounded-full"></div>
+                    <span className="text-purple-100 text-xs sm:text-sm font-just-another-hand tracking-widest">Actionable guidance</span>
                   </div>
                 </div>
               </CardContent>
@@ -239,7 +239,7 @@ export default function Feature() {
             >
               <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-300" />
             </motion.div>
-            <span className="text-purple-100 font-medium text-2xl sm:text-base font-just-another-hand tracking-widest">Ready to seek and unlock your wisdom and intuition?</span>
+            <span className="text-purple-100 font-medium text-lg sm:text-xl font-just-another-hand tracking-widest">Ready to seek and unlock your wisdom and intuition?</span>
             <motion.div
               animate={{ rotate: [0, -360] }}
               transition={{ duration: 20, repeat: Infinity as any, ease: "linear" }}
@@ -252,7 +252,7 @@ export default function Feature() {
             <Link href="/reading">
               <Button
                 size="lg"
-                className="font-caveat-brush bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-3 sm:py-4 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="font-caveat-brush bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3 rounded-full border border-purple-300/30 shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Start Your First Reading
               </Button>

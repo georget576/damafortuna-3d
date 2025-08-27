@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
 import { Calendar, Edit, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { getJournalEntry, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
@@ -134,56 +133,57 @@ export default function JournalEntryPage() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-4 mb-6">
-          <Button
-            onClick={() => router.push('/journal')}
-            variant="outline"
-            className="border-gray-600 bg-purple-700 font-caveat-brush"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Journal
-          </Button>
-          <div>
-            <h1 className="text-4xl font-bold font-caveat-brush text-purple-300">
-              {entry.title || 'Untitled Reading'}
-            </h1>
-            <p className="text-gray-400 flex items-center gap-2 mt-2">
-              <Calendar className="h-4 w-4" />
-              {formatDate(entry.createdAt)}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex justify-end gap-2 font-caveat-brush">
-          {editing ? (
-            <>
-              <Button
-                onClick={handleSaveEdit}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                <Save className="h-4 w-4 mr-2" />
-                Save
-              </Button>
-              <Button
-                onClick={handleCancelEdit}
-                variant="outline"
-                className="border-gray-600 text-black"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Cancel
-              </Button>
-            </>
-          ) : (
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 md:mb-6">
+          <div className="flex items-center gap-3 sm:gap-4">
             <Button
-              onClick={() => setEditing(true)}
+              onClick={() => router.push('/journal')}
               variant="outline"
-              className="border-gray-600 bg-purple-700 font-caveat-brush"
+              className="border-gray-600 bg-purple-700 font-caveat-brush text-sm sm:text-base px-3 sm:px-4 py-2"
             >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit Entry
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Back to Journal</span>
             </Button>
-          )}
+            <div>
+              <h1 className="text-2xl sm:text-4xl font-bold font-caveat-brush text-purple-300">
+                {entry.title || 'Untitled Reading'}
+              </h1>
+              <p className="text-gray-400 flex items-center gap-2 mt-1 md:mt-2 text-sm">
+                <Calendar className="h-4 w-4" />
+                {formatDate(entry.createdAt)}
+              </p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 font-caveat-brush">
+            {editing ? (
+              <>
+                <Button
+                  onClick={handleSaveEdit}
+                  className="bg-green-600 hover:bg-green-700 text-sm sm:text-base px-3 sm:px-4 py-2"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+                <Button
+                  onClick={handleCancelEdit}
+                  variant="outline"
+                  className="border-gray-600 text-black text-sm sm:text-base px-3 sm:px-4 py-2"
+                >
+                  <X className="h-4 w-4 mr-2" />
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <Button
+                onClick={() => setEditing(true)}
+                variant="outline"
+                className="border-gray-600 bg-purple-700 font-caveat-brush text-sm sm:text-base px-3 sm:px-4 py-2"
+              >
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Entry
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

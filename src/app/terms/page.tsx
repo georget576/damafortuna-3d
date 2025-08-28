@@ -16,90 +16,92 @@ export default function TermsPage() {
             <div className="space-y-8 text-sm leading-relaxed text-muted-foreground">
               <Section title="Acceptance of Terms">
                 <p>
-                  By accessing and using DamaFortuna 3D, you accept and agree to be bound by the terms and provision of this agreement.
+                  By accessing, browsing, or otherwise utilizing the DamaFortuna 3D platform, you hereby acknowledge and affirm your acceptance of, and agreement to be legally bound by, the terms and conditions set forth in this Terms of Service agreement. If you do not agree to these terms, you are expressly prohibited from using the platform.
                 </p>
               </Section>
 
               <Section title="Use License">
                 <p>
-                  Permission is granted to temporarily download one copy of DamaFortuna 3D for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
+                  Subject to your compliance with these Terms of Service, DamaFortuna 3D grants you a limited, revocable, non-exclusive, and non-transferable license to download and temporarily access one copy of the platform solely for personal, non-commercial, and transitory viewing purposes. This license does not constitute a transfer of title, and under this license, you shall not:
                 </p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
-                  <li>Modify or copy the materials</li>
-                  <li>Use the materials for any commercial purpose</li>
-                  <li>Attempt to decompile or reverse engineer any software contained on DamaFortuna 3D</li>
-                  <li>Remove any copyright or other proprietary notations from the materials</li>
-                  <li>Transfer the materials to another person or "mirror" the materials on any other server</li>
+                  <li>Alter, modify, or duplicate any materials contained within the platform</li>
+                  <li>Utilize the materials for any commercial or revenue-generating purpose</li>
+                  <li>Attempt to decompile, disassemble, or reverse engineer any software components</li>
+                  <li>Remove, obscure, or alter any copyright, trademark, or proprietary notices</li>
+                  <li>Distribute, sublicense, or mirror the materials on any other server or medium</li>
                 </ul>
               </Section>
 
               <Section title="Disclaimer">
                 <p>
-                  The materials on DamaFortuna 3D are provided on an 'as is' basis. DamaFortuna 3D makes no warranties, expressed or implied...
+                  All materials, content, and services provided via DamaFortuna 3D are offered on an "as is" and "as available" basis. DamaFortuna 3D makes no representations or warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
                 </p>
               </Section>
 
               <Section title="Limitations">
                 <p>
-                  In no event shall DamaFortuna 3D or its suppliers be liable for any damages...
+                  Under no circumstances shall DamaFortuna 3D or its affiliates, licensors, or suppliers be held liable for any indirect, incidental, consequential, or punitive damages arising out of the use or inability to use the platform, even if DamaFortuna 3D has been advised of the possibility of such damages.
                 </p>
               </Section>
 
               <Section title="Accuracy of Materials">
                 <p>
-                  The materials appearing on DamaFortuna 3D could include technical, typographical, or photographic errors...
+                  While reasonable efforts are made to ensure the accuracy and reliability of the content presented on DamaFortuna 3D, the platform may contain typographical, technical, or photographic errors. DamaFortuna 3D does not warrant that any of the materials are accurate, complete, or current.
                 </p>
               </Section>
 
               <Section title="Links">
                 <p>
-                  DamaFortuna 3D has not reviewed all of the sites linked to its site...
+                  DamaFortuna 3D may contain hyperlinks to external websites that are not maintained or controlled by us. We do not endorse, review, or assume responsibility for the content, policies, or practices of any third-party sites linked from our platform.
                 </p>
               </Section>
 
               <Section title="Modifications">
                 <p>
-                  DamaFortuna 3D may revise these terms of service for its site at any time without notice...
+                  DamaFortuna 3D reserves the right, at its sole discretion, to amend, revise, or otherwise modify these Terms of Service at any time without prior notice. Continued use of the platform following any such changes shall constitute your acceptance of the revised terms.
                 </p>
               </Section>
 
               <Section title="Governing Law">
                 <p>
-                  These terms and conditions are governed by and construed in accordance with the laws of Malaysia...
+                  These Terms of Service shall be governed by, and construed in accordance with, the laws of Malaysia. Any disputes arising under or in connection with these terms shall be subject to the exclusive jurisdiction of the courts located within Malaysia.
                 </p>
               </Section>
 
               <Section title="Our Tarot Reading Services">
                 <p>
-                  DamaFortuna 3D provides entertainment purposes only...
+                  The tarot reading services provided by DamaFortuna 3D are intended solely for entertainment purposes. No guarantees or assurances are made regarding the accuracy, reliability, or outcomes of any readings, and they should not be construed as professional advice.
                 </p>
               </Section>
 
               <Section title="User Accounts">
                 <p>
-                  When you create an account, you agree to provide accurate, current, and complete information...
+                  By registering for an account on DamaFortuna 3D, you agree to furnish accurate, current, and complete information. You are solely responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
                 </p>
               </Section>
 
               <Section title="Prohibited Activities">
-                <p>You may not use our service for any unlawful or prohibited activities, including but not limited to:</p>
+                <p>
+                  You shall not engage in any activity that is unlawful, prohibited by these Terms, or otherwise harmful to the integrity of the platform, including but not limited to:
+                </p>
                 <ul className="list-disc list-inside ml-4 space-y-1">
-                  <li>Attempting to gain unauthorized access to our systems</li>
-                  <li>Interfering with or disrupting the service or servers or networks</li>
-                  <li>Using the service for spam or unsolicited commercial communications</li>
-                  <li>Uploading or transmitting viruses or other malicious code</li>
+                  <li>Attempting to gain unauthorized access to any systems or networks</li>
+                  <li>Disrupting or interfering with the functionality of the platform or its servers</li>
+                  <li>Engaging in spamming, phishing, or other unsolicited communications</li>
+                  <li>Uploading or disseminating malicious software, viruses, or harmful code</li>
                 </ul>
               </Section>
 
               <Section title="Changes to Terms">
                 <p>
-                  We reserve the right to modify these terms at any time...
+                  DamaFortuna 3D reserves the right to update or modify these Terms of Service at any time. It is your responsibility to review these terms periodically for any changes. Continued use of the platform following the posting of changes constitutes acceptance thereof.
                 </p>
               </Section>
 
               <Section title="Contact Us">
                 <p>
-                  If you have any questions about these Terms of Service, please contact us.
+                  Should you have any questions, concerns, or inquiries regarding these Terms of Service, you are encouraged to contact us through the appropriate channels provided on the platform.
                 </p>
               </Section>
             </div>
@@ -119,4 +121,3 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     </div>
   )
 }
-

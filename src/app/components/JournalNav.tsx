@@ -99,9 +99,9 @@ export function JournalNav({ currentId }: JournalNavProps) {
             <p className="text-sm mt-2">Create your first reading!</p>
           </div>
         ) : (
-          <div className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+          <div className="flex flex-col space-y-6 max-h-[calc(100vh-200px)] overflow-y-aut pr-2">
             {entries.map((entry) => (
-              <Link key={entry.id} href={`/journal/${entry.id}`}>
+              <Link key={entry.id} href={`/journal/${entry.slug || entry.id}`}>
                 <Card 
                   className={`cursor-pointer transition-all duration-200 hover:bg-gray-800/70 ${
                     currentId === entry.id ? 'bg-purple-900/30 border-purple-600' : 'bg-gray-800/50 border-gray-700'
@@ -110,9 +110,9 @@ export function JournalNav({ currentId }: JournalNavProps) {
                   <CardHeader className="pb-2">
                     <div className="flex justify-between items-start">
                       <CardTitle className="font-caveat-brush text-lg truncate text-white">
-                        {entry.title || 'Untitled Reading'}
+                        {entry.slug || 'Untitled Reading'}
                       </CardTitle>
-                      <CardDescription className="text-xs text-gray-400 ml-2 flex-shrink-0">
+                      <CardDescription className="text-xs text-gray-400 ml-2 flex-shrink-0 font-just-another-hand tracking-widest">
                         {getSpreadTypeDisplay(entry.reading.spreadType)}
                       </CardDescription>
                     </div>

@@ -140,6 +140,7 @@ model JournalEntry {
   readingId String  @unique()
 
   title     String?
+  slug      String?  @unique
   notes     String
   userNotes String?
   createdAt DateTime @default(now())

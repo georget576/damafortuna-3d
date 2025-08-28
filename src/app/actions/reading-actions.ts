@@ -8,6 +8,7 @@ import {
   DrawCardResponse,
   CardInterpretation
 } from '@/app/types/tarot'
+import { generateTitleSlug, generateUniqueSlug } from '@/app/utils/slug'
 
 // Types for our actions
 export interface DrawCardsRequest {
@@ -202,6 +203,13 @@ export async function saveReading(
       return { success: false, error: 'No deck found' }
     }
     
+    // Get existing slugs for this user to avoid conflicts
+    const existingEntries = await prisma.journalEntry.findMany({
+      where: { userId: targetUserId },
+      select: { slug: true }
+    })
+    const existingSlugs = existingEntries.map(entry => entry.slug).filter(Boolean) as string[]
+    
     // Create the reading in the database
     const reading = await prisma.reading.create({
       data: {
@@ -212,6 +220,7 @@ export async function saveReading(
           create: {
             userId: targetUserId,
             title,
+            slug: generateUniqueSlug(userInput || interpretation, existingSlugs), // Use user input for slug, fallback to interpretation
             notes: interpretation,
             userNotes: userInput || null // Include user input as userNotes
           }
@@ -240,6 +249,7 @@ export async function saveReading(
 export interface JournalEntry {
   id: string
   title: string | null
+  slug: string | null
   notes: string
   userNotes: string | null
   createdAt: string
@@ -334,6 +344,7 @@ export async function getJournalEntries(page: number = 1, limit: number = 10, us
       ...entry,
       id: entry.id,
       title: entry.title || 'Untitled Reading',
+      slug: entry.slug || generateTitleSlug(entry.title || 'Untitled Reading'),
       notes: entry.notes,
       userNotes: entry.userNotes,
       createdAt: entry.createdAt.toISOString(),
@@ -370,7 +381,108 @@ export async function getJournalEntries(page: number = 1, limit: number = 10, us
   }
 }
 
-// Action to get a single journal entry
+// Action to get a single journal entry by slug
+export async function getJournalEntryBySlug(slug: string, userId?: string): Promise<JournalEntry | null> {
+  try {
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Use provided userId or fall back to authenticated user
+    let user
+    if (userId) {
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+    } else if (session?.user?.id) {
+      // Use authenticated user if available
+      user = await prisma.user.findUnique({
+        where: { id: session.user.id }
+      })
+    }
+    
+    if (!user) {
+      return null
+    }
+    
+    // Get the journal entry with related data
+    const entry = await prisma.journalEntry.findFirst({
+      where: {
+        slug: slug,
+        userId: user.id
+      },
+      include: {
+        reading: {
+          include: {
+            readingCards: {
+              include: {
+                card: {
+                  select: {
+                    id: true,
+                    name: true,
+                    arcana: true,
+                    suit: true,
+                    number: true,
+                    imageUrl: true,
+                    keywords: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+    
+    // Additional validation: ensure entry exists and belongs to the user
+    if (!entry) {
+      return null
+    }
+    
+    // Double-check that the entry belongs to the current user
+    if (entry.userId !== user.id) {
+      return null
+    }
+    
+    if (!entry) {
+      return null
+    }
+    
+    // Transform entry to match our interface
+    return {
+      ...entry,
+      id: entry.id,
+      title: entry.title || 'Untitled Reading',
+      slug: entry.slug || generateTitleSlug(entry.title || 'Untitled Reading'),
+      notes: entry.notes,
+      userNotes: entry.userNotes,
+      createdAt: entry.createdAt.toISOString(),
+      updatedAt: entry.updatedAt.toISOString(),
+      reading: {
+        id: entry.reading.id,
+        spreadType: entry.reading.spreadType,
+        createdAt: entry.reading.createdAt.toISOString(),
+        readingCards: entry.reading.readingCards.map(rc => ({
+          card: {
+            id: rc.card.id,
+            name: rc.card.name,
+            arcana: rc.card.arcana,
+            suit: rc.card.suit,
+            number: rc.card.number,
+            imageUrl: rc.card.imageUrl,
+            keywords: rc.card.keywords || []
+          },
+          position: rc.position,
+          isReversed: rc.isReversed
+        }))
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching journal entry by slug:', error)
+    return null
+  }
+}
+
+// Action to get a single journal entry by ID
 export async function getJournalEntry(entryId: string, userId?: string): Promise<JournalEntry | null> {
   try {
     // Get the authenticated user session
@@ -441,6 +553,7 @@ export async function getJournalEntry(entryId: string, userId?: string): Promise
       ...entry,
       id: entry.id,
       title: entry.title || 'Untitled Reading',
+      slug: entry.slug || generateTitleSlug(entry.title || 'Untitled Reading'),
       notes: entry.notes,
       userNotes: entry.userNotes,
       createdAt: entry.createdAt.toISOString(),
@@ -516,6 +629,16 @@ export async function updateJournalEntry(
       return { success: false, error: 'Journal entry not found or access denied' }
     }
     
+    // Get existing slugs for this user to avoid conflicts (excluding current entry)
+    const existingEntries = await prisma.journalEntry.findMany({
+      where: {
+        userId: user.id,
+        id: { not: entryId } // Exclude current entry from slug check
+      },
+      select: { slug: true }
+    })
+    const existingSlugs = existingEntries.map(entry => entry.slug).filter(Boolean) as string[]
+    
     // Update the journal entry
     await prisma.journalEntry.update({
       where: {
@@ -524,6 +647,7 @@ export async function updateJournalEntry(
       },
       data: {
         title,
+        slug: generateUniqueSlug(userNotes || notes, existingSlugs), // Use user notes for slug, fallback to journal entry content
         notes,
         userNotes
       }

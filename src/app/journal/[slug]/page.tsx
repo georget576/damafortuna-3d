@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar, Edit, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { getJournalEntry, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
+import { getJournalEntryBySlug, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
+import { generateTitleSlug } from '@/app/utils/slug'
 import Image from 'next/image'
 
 interface User {
@@ -67,7 +68,7 @@ export default function JournalEntryPage() {
       setLoading(true)
       try {
         const userId = (session?.user as User)?.id
-        const result = await getJournalEntry(params.id as string, userId)
+        const result = await getJournalEntryBySlug(params.slug as string, userId)
         if (result) {
           setEntry(result)
           setEditForm({
@@ -91,7 +92,7 @@ export default function JournalEntryPage() {
     if (status === 'authenticated') {
       fetchEntry()
     }
-  }, [params.id, router, status, (session?.user as User)?.id])
+  }, [params.slug, router, status, (session?.user as User)?.id])
 
   const handleSaveEdit = async () => {
     if (!entry) return
@@ -133,6 +134,12 @@ export default function JournalEntryPage() {
       notes: entry.notes,
       userNotes: entry.userNotes || ''
     })
+  }
+
+  // Generate slug URL for the entry (now using the current slug)
+  const generateSlugUrl = () => {
+    if (!entry || !entry.slug) return ''
+    return `/journal/${entry.slug}`
   }
 
   const formatDate = (dateString: string) => {
@@ -189,6 +196,16 @@ export default function JournalEntryPage() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               <span className="hidden sm:inline">Back to Journal</span>
             </Button>
+            {entry.slug && (
+              <Button
+                onClick={() => router.push(generateSlugUrl())}
+                variant="outline"
+                className="border-gray-600 bg-purple-700 font-caveat-brush text-sm sm:text-base px-3 sm:px-4 py-2"
+                title="View slug URL"
+              >
+                🔗
+              </Button>
+            )}
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold font-caveat-brush text-purple-300">
                 {entry.title || 'Untitled Reading'}

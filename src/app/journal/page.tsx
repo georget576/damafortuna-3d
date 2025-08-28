@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Calendar, Edit, Save, X, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { getJournalEntries, updateJournalEntry, deleteJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
+import { generateTitleSlug } from '@/app/utils/slug'
 
 interface User {
   id?: string

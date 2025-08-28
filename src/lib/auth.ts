@@ -5,12 +5,20 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import { passwordService } from "./password"
 
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
     CredentialsProvider({
       name: "credentials",
@@ -69,15 +77,27 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async redirect({ url, baseUrl }) {
+      console.log('Redirect callback:', { url, baseUrl })
+      
+      // Use the configured NEXTAUTH_URL or fallback to baseUrl
+      const authUrl = process.env.NEXTAUTH_URL || baseUrl
+      
       // Ensure HTTPS for production environments
       const secureBaseUrl = process.env.NODE_ENV === 'production'
-        ? baseUrl.replace('http://', 'https://')
-        : baseUrl
+        ? authUrl.replace('http://', 'https://')
+        : authUrl
         
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${secureBaseUrl}${url}`
       // Allows callback URLs on the same origin
-      else if (new URL(url).origin === secureBaseUrl) return url
+      try {
+        if (new URL(url).origin === secureBaseUrl) return url
+      } catch {
+        // URL parsing failed, continue to next checks
+      }
+      // Special handling for Google OAuth callback
+      if (url.includes('/api/auth/callback/google')) return url
+      // Default to the base URL if callback URL is invalid
       return secureBaseUrl
     }
   }

@@ -245,17 +245,25 @@ export interface JournalEntry {
 }
 
 // Action to get user's journal entries with pagination
-export async function getJournalEntries(page: number = 1, limit: number = 10): Promise<{
+export async function getJournalEntries(page: number = 1, limit: number = 10, userId?: string): Promise<{
   entries: JournalEntry[]
   total: number
   totalPages: number
   currentPage: number
 }> {
   try {
-    // First, get the default user
-    const user = await prisma.user.findFirst({
-      where: { email: 'default@example.com' }
-    })
+    // Use provided userId or fall back to default user
+    let user
+    if (userId) {
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+    } else {
+      // Fallback to default user for backward compatibility
+      user = await prisma.user.findFirst({
+        where: { email: 'default@example.com' }
+      })
+    }
     
     if (!user) {
       return { entries: [], total: 0, totalPages: 0, currentPage: page }
@@ -332,12 +340,20 @@ export async function getJournalEntries(page: number = 1, limit: number = 10): P
 }
 
 // Action to get a single journal entry
-export async function getJournalEntry(entryId: string): Promise<JournalEntry | null> {
+export async function getJournalEntry(entryId: string, userId?: string): Promise<JournalEntry | null> {
   try {
-    // First, get the default user
-    const user = await prisma.user.findFirst({
-      where: { email: 'default@example.com' }
-    })
+    // Use provided userId or fall back to default user
+    let user
+    if (userId) {
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+    } else {
+      // Fallback to default user for backward compatibility
+      user = await prisma.user.findFirst({
+        where: { email: 'default@example.com' }
+      })
+    }
     
     if (!user) {
       return null
@@ -415,13 +431,22 @@ export async function updateJournalEntry(
   entryId: string,
   title: string,
   notes: string,
-  userNotes: string
+  userNotes: string,
+  userId?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // First, get the default user
-    const user = await prisma.user.findFirst({
-      where: { email: 'default@example.com' }
-    })
+    // Use provided userId or fall back to default user
+    let user
+    if (userId) {
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+    } else {
+      // Fallback to default user for backward compatibility
+      user = await prisma.user.findFirst({
+        where: { email: 'default@example.com' }
+      })
+    }
     
     if (!user) {
       return { success: false, error: 'User not found' }

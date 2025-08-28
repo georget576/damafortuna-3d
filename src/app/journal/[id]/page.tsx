@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,9 +11,17 @@ import { toast } from 'sonner'
 import { getJournalEntry, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
 import Image from 'next/image'
 
+interface User {
+  id: string
+  name?: string | null
+  email?: string | null
+  image?: string | null
+}
+
 export default function JournalEntryPage() {
   const params = useParams()
   const router = useRouter()
+  const { data: session, status } = useSession()
   const [entry, setEntry] = useState<JournalEntry | null>(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
@@ -26,7 +35,8 @@ export default function JournalEntryPage() {
     const fetchEntry = async () => {
       setLoading(true)
       try {
-        const result = await getJournalEntry(params.id as string)
+        const userId = (session?.user as User)?.id
+        const result = await getJournalEntry(params.id as string, userId)
         if (result) {
           setEntry(result)
           setEditForm({
@@ -47,18 +57,22 @@ export default function JournalEntryPage() {
       }
     }
 
-    fetchEntry()
-  }, [params.id, router])
+    if (status === 'authenticated') {
+      fetchEntry()
+    }
+  }, [params.id, router, status, (session?.user as User)?.id])
 
   const handleSaveEdit = async () => {
     if (!entry) return
 
     try {
+      const userId = (session?.user as User)?.id
       const result = await updateJournalEntry(
         entry.id,
         editForm.title,
         editForm.notes,
-        editForm.userNotes
+        editForm.userNotes,
+        userId
       )
 
       if (result.success) {

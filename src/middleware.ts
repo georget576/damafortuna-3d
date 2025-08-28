@@ -16,6 +16,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(signInUrl)
   }
 
+  // Handle www to non-www redirects (or vice versa) for consistency
+  const host = request.nextUrl.host
+  if (host === 'damafortuna.org') {
+    const newUrl = new URL(request.url)
+    newUrl.host = 'www.damafortuna.org'
+    return NextResponse.redirect(newUrl)
+  }
+
   return NextResponse.next()
 }
 

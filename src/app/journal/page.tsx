@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -9,7 +10,15 @@ import { Calendar, Edit, Save, X, ChevronLeft, ChevronRight } from 'lucide-react
 import { toast } from 'sonner'
 import { getJournalEntries, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
 
+interface User {
+  id: string
+  name?: string | null
+  email?: string | null
+  image?: string | null
+}
+
 export default function JournalContentPage() {
+  const { data: session, status } = useSession()
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
@@ -26,7 +35,8 @@ export default function JournalContentPage() {
   const fetchEntries = async (page: number = 1) => {
     setLoading(true)
     try {
-      const result = await getJournalEntries(page, 10)
+      const userId = (session?.user as User)?.id
+      const result = await getJournalEntries(page, 10, userId)
       setEntries(result.entries)
       setTotalPages(result.totalPages)
       setTotalEntries(result.total)
@@ -40,8 +50,10 @@ export default function JournalContentPage() {
   }
 
   useEffect(() => {
-    fetchEntries(currentPage)
-  }, [currentPage])
+    if (status === 'authenticated') {
+      fetchEntries(currentPage)
+    }
+  }, [currentPage, status, (session?.user as User)?.id])
 
   const handleEditClick = (entry: JournalEntry) => {
     setEditingEntry(entry.id)
@@ -65,11 +77,13 @@ export default function JournalContentPage() {
     if (!editingEntry) return
 
     try {
+      const userId = (session?.user as User)?.id
       const result = await updateJournalEntry(
         editingEntry,
         editForm.title,
         editForm.notes,
-        editForm.userNotes
+        editForm.userNotes,
+        userId
       )
 
       if (result.success) {

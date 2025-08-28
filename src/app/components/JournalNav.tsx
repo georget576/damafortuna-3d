@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -8,11 +9,19 @@ import { Calendar, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { getJournalEntries, JournalEntry } from '@/app/actions/reading-actions'
 
+interface User {
+  id: string
+  name?: string | null
+  email?: string | null
+  image?: string | null
+}
+
 interface JournalNavProps {
   currentId?: string
 }
 
 export function JournalNav({ currentId }: JournalNavProps) {
+  const { data: session, status } = useSession()
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -20,7 +29,8 @@ export function JournalNav({ currentId }: JournalNavProps) {
     const fetchEntries = async () => {
       setLoading(true)
       try {
-        const result = await getJournalEntries(1, 50) // Get up to 50 entries for nav
+        const userId = (session?.user as User)?.id
+        const result = await getJournalEntries(1, 50, userId) // Get up to 50 entries for nav
         setEntries(result.entries)
       } catch (error) {
         console.error('Error fetching journal entries:', error)
@@ -30,8 +40,10 @@ export function JournalNav({ currentId }: JournalNavProps) {
       }
     }
 
-    fetchEntries()
-  }, [])
+    if (status === 'authenticated') {
+      fetchEntries()
+    }
+  }, [status, (session?.user as User)?.id])
 
   const formatDate = (dateString: string) => {
     return (

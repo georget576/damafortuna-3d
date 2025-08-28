@@ -2,23 +2,37 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
-import { Calendar, Edit, Save, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Calendar, Edit, Save, X, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { getJournalEntries, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
+import { getJournalEntries, updateJournalEntry, deleteJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
 
 interface User {
-  id: string
+  id?: string
   name?: string | null
   email?: string | null
   image?: string | null
 }
 
+// Extend the NextAuth session type to include id
+declare module "next-auth" {
+  interface Session {
+    user: {
+      id?: string
+      name?: string | null
+      email?: string | null
+      image?: string | null
+    }
+  }
+}
+
 export default function JournalContentPage() {
   const { data: session, status } = useSession()
+  const router = useRouter()
   const [entries, setEntries] = useState<JournalEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
@@ -30,13 +44,18 @@ export default function JournalContentPage() {
     notes: '',
     userNotes: ''
   })
+  const [deletingEntry, setDeletingEntry] = useState<string | null>(null)
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Fetch journal entries
   const fetchEntries = async (page: number = 1) => {
     setLoading(true)
     try {
-      const userId = (session?.user as User)?.id
-      const result = await getJournalEntries(page, 10, userId)
+      const userId = session?.user?.id as string | undefined
+      const userEmail = session?.user?.email as string | undefined
+      
+      const result = await getJournalEntries(page, 10, userId, userEmail)
+      
       setEntries(result.entries)
       setTotalPages(result.totalPages)
       setTotalEntries(result.total)
@@ -53,7 +72,38 @@ export default function JournalContentPage() {
     if (status === 'authenticated') {
       fetchEntries(currentPage)
     }
-  }, [currentPage, status, (session?.user as User)?.id])
+  }, [currentPage, status, session?.user])
+
+  // Strict authentication guard - return after hooks are called
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className='font-just-another-hand tracking-widest tarot-gold'>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status !== 'authenticated') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center bg-gray-800/50 rounded-lg p-8 max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-4 font-caveat-brush text-purple-300">Authentication Required</h2>
+          <p className="text-gray-300 mb-6 font-shadows-into-light">
+            Please sign in to access your journal entries.
+          </p>
+          <Button
+            onClick={() => window.location.href = '/auth/signin'}
+            className="bg-purple-600 hover:bg-purple-700 font-caveat-brush px-6 py-3"
+          >
+            Sign In
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   const handleEditClick = (entry: JournalEntry) => {
     setEditingEntry(entry.id)
@@ -77,13 +127,16 @@ export default function JournalContentPage() {
     if (!editingEntry) return
 
     try {
-      const userId = (session?.user as User)?.id
+      const userId = session?.user?.id as string | undefined
+      const userEmail = session?.user?.email as string | undefined
+      
       const result = await updateJournalEntry(
         editingEntry,
         editForm.title,
         editForm.notes,
         editForm.userNotes,
-        userId
+        userId,
+        userEmail
       )
 
       if (result.success) {
@@ -96,6 +149,38 @@ export default function JournalContentPage() {
     } catch (error) {
       console.error('Error updating journal entry:', error)
       toast.error('Failed to update journal entry')
+    }
+  }
+
+  const handleDeleteClick = (entryId: string) => {
+    setDeletingEntry(entryId)
+  }
+
+  const handleCancelDelete = () => {
+    setDeletingEntry(null)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!deletingEntry) return
+
+    try {
+      const userId = session?.user?.id as string | undefined
+      const userEmail = session?.user?.email as string | undefined
+      
+      const result = await deleteJournalEntry(deletingEntry, userId, userEmail)
+
+      if (result.success) {
+        toast.success('Journal entry deleted successfully!')
+        setDeletingEntry(null)
+        fetchEntries(currentPage) // Refresh entries
+        router.refresh() // Refresh the page to update JournalNav
+      } else {
+        throw new Error(result.error || 'Failed to delete entry')
+      }
+    } catch (error) {
+      console.error('Error deleting journal entry:', error)
+      toast.error('Failed to delete journal entry')
+      setDeletingEntry(null)
     }
   }
 
@@ -199,14 +284,24 @@ export default function JournalContentPage() {
                           </Button>
                         </>
                       ) : (
-                        <Button
-                          onClick={() => handleEditClick(entry)}
-                          size="sm"
-                          variant="outline"
-                          className="border-gray-600 p-2"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
+                        <>
+                          <Button
+                            onClick={() => handleEditClick(entry)}
+                            size="sm"
+                            variant="outline"
+                            className="border-gray-600 p-2"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteClick(entry.id)}
+                            size="sm"
+                            variant="outline"
+                            className="border-red-600 hover:bg-red-600 hover:text-white p-2"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -331,6 +426,33 @@ export default function JournalContentPage() {
             Page {currentPage} of {totalPages} • {totalEntries} total entries
           </div>
         </>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {deletingEntry && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full border border-gray-700">
+            <h3 className="text-xl font-bold mb-4 font-caveat-brush text-red-300">Delete Journal Entry</h3>
+            <p className="text-gray-300 mb-6 font-shadows-into-light">
+              Are you sure you want to delete this journal entry? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <Button
+                onClick={handleCancelDelete}
+                variant="outline"
+                className="border-gray-600 font-caveat-brush text-black"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmDelete}
+                className="bg-red-600 hover:bg-red-700 font-caveat-brush"
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

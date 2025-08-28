@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/database'
 import { ReadingResponse, DrawCardResponse, CardInterpretation } from '@/app/types/tarot'
 import { z } from 'zod'
@@ -28,6 +30,17 @@ const paginationSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
     // Parse and validate request body
     const body = await request.json()
     const validatedData = readingRequestSchema.parse(body)
@@ -45,12 +58,12 @@ export async function POST(request: NextRequest) {
     // Create the reading in the database
     const reading = await prisma.reading.create({
       data: {
-        userId: 'default-user', // In a real app, this would come from authentication
+        userId: session.user.id, // Use authenticated user's ID
         deckId: deck.id,
         spreadType: spreadType.toUpperCase() as any, // Convert to enum
         journalEntry: {
           create: {
-            userId: 'default-user', // In a real app, this would come from authentication
+            userId: session.user.id, // Use authenticated user's ID
             title,
             notes: interpretation,
             userNotes: userInput || null // Include user input as userNotes
@@ -120,6 +133,17 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+    
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url)
     const pagination = paginationSchema.parse(Object.fromEntries(searchParams))
@@ -146,7 +170,7 @@ export async function GET(request: NextRequest) {
         },
         journalEntry: {
           where: {
-            userId: 'default-user' // In a real app, this would come from authentication
+            userId: session.user.id // Use authenticated user's ID
           }
         }
       }

@@ -24,6 +24,37 @@ export default function JournalEntryPage() {
   const { data: session, status } = useSession()
   const [entry, setEntry] = useState<JournalEntry | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Strict authentication guard
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className='font-just-another-hand tracking-widest text-2xl text-purple-200'>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status !== 'authenticated') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center bg-gray-800/50 rounded-lg p-8 max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-4 font-caveat-brush text-purple-300">Authentication Required</h2>
+          <p className="text-gray-300 mb-6 font-shadows-into-light">
+            Please sign in to access journal entries.
+          </p>
+          <Button
+            onClick={() => window.location.href = '/auth/signin'}
+            className="bg-purple-600 hover:bg-purple-700 font-caveat-brush px-6 py-3"
+          >
+            Sign In
+          </Button>
+        </div>
+      </div>
+    )
+  }
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({
     title: '',

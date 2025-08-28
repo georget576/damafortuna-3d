@@ -27,6 +27,7 @@ export default function ReadingPage() {
   const [spreadType, setSpreadType] = useState<SpreadType>('single')
   const [reading, setReading] = useState<ReadingData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [allTarotCards, setAllTarotCards] = useState<TarotCardData[]>([])
   const [userInput, setUserInput] = useState<string>('')
@@ -71,10 +72,13 @@ export default function ReadingPage() {
       return
     }
     
-    if (!session) {
+    if (!session || !session.user?.id) {
       toast.error('You must be logged in to save readings')
       return
     }
+    
+    setIsSaving(true)
+    setError(null)
     
     try {
       const result = await saveReading(
@@ -83,7 +87,8 @@ export default function ReadingPage() {
         reading.cards,
         reading.interpretation.reading,
         reading.interpretation.cardInterpretations,
-        userInput
+        userInput,
+        session?.user?.id
       )
       
       if (result.success) {
@@ -93,6 +98,8 @@ export default function ReadingPage() {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save reading')
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -196,12 +203,17 @@ export default function ReadingPage() {
               <h2 className="text-2xl font-bold font-caveat-brush tarot-gold">Your {spreadType.toLowerCase()} Reading</h2>
               <Button
                 onClick={handleSaveReading}
-                className={`${status === 'loading' ? 'bg-gray-600' : session ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} font-just-another-hand text-2xl`}
-                disabled={status === 'loading' || !session}
+                className={`${status === 'loading' ? 'bg-gray-600' : session?.user?.id ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} font-just-another-hand text-2xl`}
+                disabled={status === 'loading' || !session?.user?.id || isSaving}
               >
                 {status === 'loading' ? 'Checking...' :
-                 !session ? 'You must be logged in to save' :
-                 'Save Reading'}
+                 !session?.user?.id ? 'You must be logged in to save' :
+                 isSaving ? (
+                   <>
+                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                     Saving...
+                   </>
+                 ) : 'Save Reading'}
               </Button>
             </div>
             

@@ -1,6 +1,8 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/database'
 import {
   DrawCardResponse,
@@ -79,12 +81,21 @@ export async function drawCards(request: DrawCardsRequest): Promise<DrawCardsRes
 // Action to create a reading
 export async function createReading(request: CreateReadingRequest): Promise<CreateReadingResponse> {
   try {
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Check if user is authenticated
+    if (!session?.user?.id) {
+      throw new Error('Authentication required')
+    }
+    
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
     const response = await fetch(`${baseUrl}/api/readings`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include', // Include cookies in the request
       body: JSON.stringify(request),
     })
 
@@ -158,22 +169,31 @@ export async function saveReading(
   cards: DrawCardResponse[],
   interpretation: string,
   cardInterpretations: CardInterpretation[],
-  userInput?: string
+  userInput?: string,
+  userId?: string
 ): Promise<{ success: boolean; readingId?: string; error?: string }> {
   try {
-    // First, check if a default user exists, if not create one
-    let user = await prisma.user.findFirst({
-      where: { email: 'default@example.com' }
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Use provided userId if available, otherwise fall back to session
+    let targetUserId = userId
+    if (!targetUserId && session?.user?.id) {
+      targetUserId = session.user.id
+    }
+    
+    // Require authentication - no fallback to default user
+    if (!targetUserId) {
+      return { success: false, error: 'Authentication required to save readings' }
+    }
+    
+    // Check if user exists
+    const userExists = await prisma.user.findUnique({
+      where: { id: targetUserId }
     })
     
-    if (!user) {
-      // Create a default user if none exists
-      user = await prisma.user.create({
-        data: {
-          email: 'default@example.com',
-          name: 'Default User'
-        }
-      })
+    if (!userExists) {
+      return { success: false, error: 'User not found' }
     }
     
     // Get the default deck
@@ -185,12 +205,12 @@ export async function saveReading(
     // Create the reading in the database
     const reading = await prisma.reading.create({
       data: {
-        userId: user.id,
+        userId: targetUserId,
         deckId: deck.id,
         spreadType: spreadType.toUpperCase() as any, // Convert to enum
         journalEntry: {
           create: {
-            userId: user.id,
+            userId: targetUserId,
             title,
             notes: interpretation,
             userNotes: userInput || null // Include user input as userNotes
@@ -245,24 +265,35 @@ export interface JournalEntry {
 }
 
 // Action to get user's journal entries with pagination
-export async function getJournalEntries(page: number = 1, limit: number = 10, userId?: string): Promise<{
+export async function getJournalEntries(page: number = 1, limit: number = 10, userId?: string, userEmail?: string): Promise<{
   entries: JournalEntry[]
   total: number
   totalPages: number
   currentPage: number
 }> {
   try {
-    // Use provided userId or fall back to default user
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Use provided userId, userEmail, or fall back to authenticated user
     let user
     if (userId) {
       user = await prisma.user.findUnique({
         where: { id: userId }
       })
-    } else {
-      // Fallback to default user for backward compatibility
+    } else if (userEmail) {
       user = await prisma.user.findFirst({
-        where: { email: 'default@example.com' }
+        where: { email: userEmail }
       })
+    } else if (session?.user?.id) {
+      // Use authenticated user if available
+      user = await prisma.user.findUnique({
+        where: { id: session.user.id }
+      })
+    }
+    
+    if (!user) {
+      return { entries: [], total: 0, totalPages: 0, currentPage: page }
     }
     
     if (!user) {
@@ -342,16 +373,19 @@ export async function getJournalEntries(page: number = 1, limit: number = 10, us
 // Action to get a single journal entry
 export async function getJournalEntry(entryId: string, userId?: string): Promise<JournalEntry | null> {
   try {
-    // Use provided userId or fall back to default user
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Use provided userId or fall back to authenticated user
     let user
     if (userId) {
       user = await prisma.user.findUnique({
         where: { id: userId }
       })
-    } else {
-      // Fallback to default user for backward compatibility
-      user = await prisma.user.findFirst({
-        where: { email: 'default@example.com' }
+    } else if (session?.user?.id) {
+      // Use authenticated user if available
+      user = await prisma.user.findUnique({
+        where: { id: session.user.id }
       })
     }
     
@@ -387,6 +421,16 @@ export async function getJournalEntry(entryId: string, userId?: string): Promise
         }
       }
     })
+    
+    // Additional validation: ensure entry exists and belongs to the user
+    if (!entry) {
+      return null
+    }
+    
+    // Double-check that the entry belongs to the current user
+    if (entry.userId !== user.id) {
+      return null
+    }
     
     if (!entry) {
       return null
@@ -432,24 +476,44 @@ export async function updateJournalEntry(
   title: string,
   notes: string,
   userNotes: string,
-  userId?: string
+  userId?: string,
+  userEmail?: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // Use provided userId or fall back to default user
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Use provided userId, userEmail, or fall back to authenticated user
     let user
     if (userId) {
       user = await prisma.user.findUnique({
         where: { id: userId }
       })
-    } else {
-      // Fallback to default user for backward compatibility
+    } else if (userEmail) {
       user = await prisma.user.findFirst({
-        where: { email: 'default@example.com' }
+        where: { email: userEmail }
+      })
+    } else if (session?.user?.id) {
+      // Use authenticated user if available
+      user = await prisma.user.findUnique({
+        where: { id: session.user.id }
       })
     }
     
     if (!user) {
       return { success: false, error: 'User not found' }
+    }
+    
+    // First, verify the entry exists and belongs to the user
+    const existingEntry = await prisma.journalEntry.findFirst({
+      where: {
+        id: entryId,
+        userId: user.id
+      }
+    })
+    
+    if (!existingEntry) {
+      return { success: false, error: 'Journal entry not found or access denied' }
     }
     
     // Update the journal entry
@@ -472,5 +536,66 @@ export async function updateJournalEntry(
   } catch (error) {
     console.error('Error updating journal entry:', error)
     return { success: false, error: 'Failed to update journal entry' }
+  }
+}
+
+// Action to delete a journal entry
+export async function deleteJournalEntry(
+  entryId: string,
+  userId?: string,
+  userEmail?: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Get the authenticated user session
+    const session = await getServerSession(authOptions)
+    
+    // Use provided userId, userEmail, or fall back to authenticated user
+    let user
+    if (userId) {
+      user = await prisma.user.findUnique({
+        where: { id: userId }
+      })
+    } else if (userEmail) {
+      user = await prisma.user.findFirst({
+        where: { email: userEmail }
+      })
+    } else if (session?.user?.id) {
+      // Use authenticated user if available
+      user = await prisma.user.findUnique({
+        where: { id: session.user.id }
+      })
+    }
+    
+    if (!user) {
+      return { success: false, error: 'User not found' }
+    }
+    
+    // First, verify the entry exists and belongs to the user
+    const existingEntry = await prisma.journalEntry.findFirst({
+      where: {
+        id: entryId,
+        userId: user.id
+      }
+    })
+    
+    if (!existingEntry) {
+      return { success: false, error: 'Journal entry not found or access denied' }
+    }
+    
+    // Delete the journal entry (this will cascade delete related reading cards)
+    await prisma.journalEntry.delete({
+      where: {
+        id: entryId,
+        userId: user.id
+      }
+    })
+    
+    // Revalidate the journal page to reflect the deletion
+    revalidatePath('/journal')
+    
+    return { success: true }
+  } catch (error) {
+    console.error('Error deleting journal entry:', error)
+    return { success: false, error: 'Failed to delete journal entry' }
   }
 }

@@ -3,7 +3,7 @@
 import { useSession, signIn, signOut } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { LogIn, LogOut, BookOpen, GraduationCap, Diamond, Menu, X } from "lucide-react"
+import { LogIn, LogOut, BookOpen, GraduationCap, Diamond, Menu, X, User } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
 
@@ -50,7 +50,12 @@ export default function Navbar() {
                 <span className="text-lg">Learn</span>
               </Button>
             </Link>
-          
+            <Link href="/profile" className="font-caveat-brush text-lg">
+              <Button variant="ghost" className="flex items-center space-x-2">
+                <User className="w-4 h-4" />
+                <span className="text-lg">Profile</span>
+              </Button>
+            </Link>
 
             {status === "loading" ? (
               <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
@@ -117,6 +122,12 @@ export default function Navbar() {
                 <Button variant="ghost" className="w-full justify-start font-caveat-brush text-lg">
                   <GraduationCap className="w-4 h-4 mr-2" />
                   Learn
+                </Button>
+              </Link>
+              <Link href="/profile" className="block">
+                <Button variant="ghost" className="w-full justify-start font-caveat-brush text-lg">
+                  <User className="w-4 h-4 mr-2" />
+                  Profile
                 </Button>
               </Link>
               

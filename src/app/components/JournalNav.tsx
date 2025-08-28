@@ -94,7 +94,7 @@ export function JournalNav({ currentId }: JournalNavProps) {
         </h2>
         
         {entries.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-gray-400 font-just-another-hand tracking-widest">
             <p>No journal entries yet</p>
             <p className="text-sm mt-2">Create your first reading!</p>
           </div>

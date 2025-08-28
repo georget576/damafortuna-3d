@@ -69,13 +69,38 @@ export const authOptions: NextAuthOptions = {
     })
   ],
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout"
   },
   callbacks: {
+    async jwt({ token, user, account }) {
+      if (user) {
+        // For OAuth providers like Google, the user ID is in the `sub` claim
+        // For credentials provider, it's in user.id
+        token.id = (user as any).id || (user as any).sub
+      } else if (token.sub) {
+        // For OAuth users, the ID is in the sub claim
+        token.id = token.sub
+      }
+      return token
+    },
+    
+    async session({ session, token }) {
+      if (token && session.user) {
+        // Use the ID from token, which could be from OAuth or credentials
+        const userId = token.id || token.sub
+        if (userId) {
+          (session.user as any).id = userId as string
+        }
+      }
+      return session
+    },
+    
     async redirect({ url, baseUrl }) {
       console.log('Redirect callback:', { url, baseUrl })
       

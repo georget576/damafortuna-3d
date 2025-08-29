@@ -29,7 +29,7 @@ export default function ArcanaDirectory({
       >
         <FerrisWheel className="w-4 h-4 text-purple-300" />
         <span className="font-bold font-caveat-brush text-purple-300">Major Arcana</span>
-        <span className="text-base opacity-75 ml-auto font-just-another-hand tracking-widest text-purple-300">22 cards</span>
+        <span className="text-base md:text-lg lg:text-xl opacity-75 ml-auto font-just-another-hand tracking-widest text-purple-300">22 cards</span>
       </button>
 
       {/* Minor Arcana with expandable directory */}
@@ -48,7 +48,7 @@ export default function ArcanaDirectory({
             <Sparkle className="w-4 h-4" />
           )}
           <span className="font-bold">Minor Arcana</span>
-          <span className="text-base opacity-75 ml-auto font-just-another-hand tracking-widest">56 cards</span>
+          <span className="text-base md:text-lg lg:text-xl opacity-75 ml-auto font-just-another-hand tracking-widest">56 cards</span>
         </button>
         
       </div>

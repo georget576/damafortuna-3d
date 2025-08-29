@@ -18,7 +18,7 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
   const [allTarotCards, setAllTarotCards] = useState<TarotCardData[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [cardsPerPage] = useState(8)
+  const [cardsPerPage] = useState(6) // Reduced for mobile
   const [selectedArcana, setSelectedArcana] = useState<'major' | 'minor' | null>(null)
   const [selectedSuit, setSelectedSuit] = useState<string | null>(null)
   const [isMinorExpanded, setIsMinorExpanded] = useState(false)
@@ -90,7 +90,7 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
             Card Library
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 md:space-y-6 lg:space-y-8">
+        <CardContent className="space-y-3 md:space-y-4 lg:space-y-6">
           {/* Search */}
           <Input
             placeholder="Search cards by name..."
@@ -111,7 +111,7 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
             
             {/* Show Suit Directory when Minor Arcana is selected */}
             {selectedArcana === 'minor' && (
-              <div className="mt-4">
+              <div className="mt-3">
                 <SuitDirectory
                   selectedSuit={selectedSuit}
                   onSuitSelect={handleSuitSelect}
@@ -127,7 +127,7 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
                 <button
                   key={card.id}
                   onClick={() => onCardSelect(card)}
-                  className={`w-full text-left p-3 md:p-4 rounded-lg transition-colors ${
+                  className={`w-full text-left p-2 md:p-3 rounded-lg transition-colors ${
                     selectedCard?.id === card.id
                       ? 'bg-purple-600 text-white'
                       : 'bg-gray-700/50 hover:bg-gray-600'
@@ -140,7 +140,7 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
                 </button>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-400">
+              <div className="text-center py-6 md:py-8 text-gray-400">
                 {selectedArcana || searchTerm
                   ? 'No cards found matching your criteria'
                   : 'Select a category to browse cards'
@@ -151,18 +151,18 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
 
           {/* Pagination Controls */}
           {filteredCards.length > cardsPerPage && (
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-700">
+            <div className="flex items-center justify-between mt-3 md:mt-4 pt-3 border-t border-gray-700">
               <Button
                 onClick={prevPage}
                 disabled={currentPage === 1}
                 variant="ghost"
                 className="font-caveat-brush text-gray-400 hover:text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base lg:text-lg"
               >
-                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
                 Previous
               </Button>
               
-              <div className="text-sm md:text-base lg:text-lg text-gray-400 font-just-another-hand tracking-wide">
+              <div className="text-xs md:text-sm lg:text-base text-gray-400 font-just-another-hand tracking-wide">
                 Page {currentPage} of {totalPages}
               </div>
               
@@ -173,7 +173,7 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
                 className="font-caveat-brush text-gray-400 hover:text-white hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base lg:text-lg"
               >
                 Next
-                <ChevronRight className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
               </Button>
             </div>
           )}

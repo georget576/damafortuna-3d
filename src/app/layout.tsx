@@ -46,8 +46,7 @@ export default function RootLayout({
         className={`${shadowsIntoLight.variable} ${caveatBrush.variable} ${justAnotherHand.variable} antialiased font-sans font-fallback`}
       >
         <Analytics/>
-        <Providers>
-          
+        <Providers>          
           {children}
           <Footer />
           <Toaster />

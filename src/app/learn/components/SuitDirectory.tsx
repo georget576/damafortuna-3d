@@ -18,7 +18,7 @@ export default function SuitDirectory({ selectedSuit, onSuitSelect }: SuitDirect
   return (
     <Card className="bg-gray-800/50 border-gray-700">
       <CardContent className="p-4">
-        <h3 className="font-bold mb-3 text-purple-300 font-caveat-brush text-lg">Minor Arcana Suits</h3>
+        <h3 className="font-bold mb-3 text-purple-300 font-caveat-brush text-lg md:text-xl lg:text-2xl">Minor Arcana Suits</h3>
         <div className="grid grid-cols-2 gap-2">
           {suits.map((suit) => (
             <button
@@ -31,8 +31,8 @@ export default function SuitDirectory({ selectedSuit, onSuitSelect }: SuitDirect
               }`}
             >
               <span className="text-2xl">{suit.icon}</span>
-              <span className="font-bold text-sm font-caveat-brush text-purple-300">{suit.name}</span>
-              <span className="text-base opacity-75 font-just-another-hand tracking-widest text-purple-300">14 cards</span>
+              <span className="font-bold text-sm md:text-base lg:text-lg font-caveat-brush text-purple-300">{suit.name}</span>
+              <span className="text-base md:text-lg lg:text-xl opacity-75 font-just-another-hand tracking-widest text-purple-300">14 cards</span>
             </button>
           ))}
         </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from '@/components/ui/button'
-import { BookOpen, GraduationCap, Target, Lightbulb } from 'lucide-react'
+import { BookOpen, GraduationCap, Target, PencilRuler } from 'lucide-react'
 
 interface LearningModule {
   id: string
@@ -38,26 +38,26 @@ const learningModules: LearningModule[] = [
     id: 'exercises',
     title: 'Practice Exercises',
     description: 'Test your tarot knowledge',
-    icon: <Lightbulb className="w-5 h-5" />
+    icon: <PencilRuler className="w-5 h-5" />
   }
 ]
 
 export default function LearningNavigation({ selectedModule, onModuleSelect }: LearningNavigationProps) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6 block lg:hidden">
       {learningModules.map((module) => (
         <Button
           key={module.id}
           variant={selectedModule === module.id ? 'default' : 'ghost'}
           onClick={() => onModuleSelect(module.id)}
           className={`flex items-center space-x-2 font-caveat-brush ${
-            selectedModule === module.id 
-              ? 'bg-purple-600 text-white' 
+            selectedModule === module.id
+              ? 'bg-purple-600 text-white'
               : 'bg-gray-800/50 text-gray-300 hover:bg-gray-700'
           }`}
         >
           {module.icon}
-          <span>{module.title}</span>
+          <span className="text-sm md:text-base lg:text-lg">{module.title}</span>
         </Button>
       ))}
     </div>

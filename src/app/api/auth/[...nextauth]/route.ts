@@ -37,7 +37,12 @@ const handler = NextAuth({
 
         if (token && session.user) {
           (session.user as any).id = token.sub as string;
-          console.log("✅ Session enriched with user ID:", token.sub);
+          console.log("✅ Session enriched with user ID:", {
+            sub: token.sub,
+            userId: (session.user as any).id,
+            email: session.user.email,
+            name: session.user.name
+          });
         }
 
         return session;

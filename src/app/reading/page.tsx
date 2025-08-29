@@ -181,7 +181,7 @@ export default function ReadingPage() {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin font-just-another-hand tracking-wide" />
                   Generating...
                 </>
               ) : (
@@ -210,7 +210,7 @@ export default function ReadingPage() {
                  !session?.user?.id ? 'You must be logged in to save' :
                  isSaving ? (
                    <>
-                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                     <Loader2 className="mr-2 h-4 w-4 animate-spin font-just-another-hand tracking-wide" />
                      Saving...
                    </>
                  ) : 'Save Reading'}

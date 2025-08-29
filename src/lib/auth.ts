@@ -83,9 +83,19 @@ export const authOptions: NextAuthOptions = {
         // For OAuth providers like Google, the user ID is in the `sub` claim
         // For credentials provider, it's in user.id
         token.id = (user as any).id || (user as any).sub
+        console.log("✅ JWT callback - User object:", {
+          userId: token.id,
+          sub: token.sub,
+          email: user.email,
+          provider: account?.provider
+        })
       } else if (token.sub) {
         // For OAuth users, the ID is in the sub claim
         token.id = token.sub
+        console.log("✅ JWT callback - Token sub:", {
+          userId: token.id,
+          sub: token.sub
+        })
       }
       return token
     },

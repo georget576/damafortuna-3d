@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Calendar, Edit, Save, X, ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
 import { getJournalEntryBySlug, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
-import { generateTitleSlug } from '@/app/utils/slug'
+
 import Image from 'next/image'
 
 interface User {
@@ -198,10 +198,13 @@ export default function JournalEntryPage() {
             </Button>
             {entry.slug && (
               <Button
-                onClick={() => router.push(generateSlugUrl())}
+                onClick={() => {
+                  navigator.clipboard.writeText(entry.slug!)
+                  toast.success('Slug copied to clipboard!')
+                }}
                 variant="outline"
                 className="border-gray-600 bg-purple-700 font-caveat-brush text-sm sm:text-base px-3 sm:px-4 py-2"
-                title="View slug URL"
+                title="Copy slug to clipboard"
               >
                 🔗
               </Button>

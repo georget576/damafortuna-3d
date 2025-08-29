@@ -258,7 +258,7 @@ export default function JournalContentPage() {
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                     <div className="flex-1 min-w-0">
                       <CardTitle className="font-caveat-brush text-lg sm:text-2xl tarot-purple truncate">
-                        {entry.title || 'Untitled Reading'}
+                        {entry.slug || entry.title || 'Untitled Reading'}
                       </CardTitle>
                       <CardDescription className="text-gray-400 mt-2 flex items-center gap-2 font-just-another-hand tracking-widest text-sm">
                         <Calendar className="h-4 w-4" />

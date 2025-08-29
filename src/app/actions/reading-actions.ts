@@ -185,8 +185,19 @@ export async function saveReading(
     
     // Require authentication - no fallback to default user
     if (!targetUserId) {
+      console.error('❌ saveReading - No user ID available:', {
+        providedUserId: userId,
+        sessionUserId: session?.user?.id,
+        session: session?.user
+      })
       return { success: false, error: 'Authentication required to save readings' }
     }
+    
+    console.log('🔍 saveReading - User ID lookup:', {
+      targetUserId,
+      providedUserId: userId,
+      sessionUserId: session?.user?.id
+    })
     
     // Check if user exists
     const userExists = await prisma.user.findUnique({
@@ -194,7 +205,8 @@ export async function saveReading(
     })
     
     if (!userExists) {
-      return { success: false, error: 'User not found' }
+      console.error('User not found in database:', { targetUserId, session: session?.user })
+      return { success: false, error: 'User not found in database. Please try logging out and back in.' }
     }
     
     // Get the default deck
@@ -303,6 +315,7 @@ export async function getJournalEntries(page: number = 1, limit: number = 10, us
     }
     
     if (!user) {
+      console.error('User not found in getJournalEntries:', { userId, userEmail, session: session?.user })
       return { entries: [], total: 0, totalPages: 0, currentPage: page }
     }
     
@@ -401,6 +414,7 @@ export async function getJournalEntryBySlug(slug: string, userId?: string): Prom
     }
     
     if (!user) {
+      console.error('User not found in getJournalEntryBySlug:', { userId, session: session?.user })
       return null
     }
     
@@ -502,6 +516,7 @@ export async function getJournalEntry(entryId: string, userId?: string): Promise
     }
     
     if (!user) {
+      console.error('User not found in getJournalEntry:', { userId, session: session?.user })
       return null
     }
     
@@ -614,7 +629,8 @@ export async function updateJournalEntry(
     }
     
     if (!user) {
-      return { success: false, error: 'User not found' }
+      console.error('User not found in updateJournalEntry:', { userId, userEmail, session: session?.user })
+      return { success: false, error: 'User not found. Please try logging out and back in.' }
     }
     
     // First, verify the entry exists and belongs to the user
@@ -691,7 +707,8 @@ export async function deleteJournalEntry(
     }
     
     if (!user) {
-      return { success: false, error: 'User not found' }
+      console.error('User not found in deleteJournalEntry:', { userId, userEmail, session: session?.user })
+      return { success: false, error: 'User not found. Please try logging out and back in.' }
     }
     
     // First, verify the entry exists and belongs to the user

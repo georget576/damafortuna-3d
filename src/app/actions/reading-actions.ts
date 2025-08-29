@@ -227,7 +227,7 @@ export async function saveReading(
       data: {
         userId: targetUserId,
         deckId: deck.id,
-        spreadType: spreadType.toUpperCase() as any, // Convert to enum
+        spreadType: spreadType.toUpperCase().replace('-', '_') as any, // Convert to enum format
         journalEntry: {
           create: {
             userId: targetUserId,

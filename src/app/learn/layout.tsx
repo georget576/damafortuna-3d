@@ -50,9 +50,9 @@ export default function LearnLayout({ children, params }: LearnLayoutProps) {
                 </Button>
               </Link>
               
-              <Link href="/learn/exercises" className="block">
+              <Link href="/learn/practice" className="block">
                 <Button 
-                  variant={params.page === 'exercises' ? 'default' : 'ghost'} 
+                  variant={params.page === 'practice' ? 'default' : 'ghost'} 
                   className="w-full justify-start font-caveat-brush"
                 >
                   <BookOpen className="w-4 h-4 mr-2" />

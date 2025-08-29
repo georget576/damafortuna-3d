@@ -44,7 +44,13 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
   const filteredCards = allTarotCards.filter(card => {
     const matchesSearch = card.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesArcana = !selectedArcana || card.arcana === selectedArcana
-    const matchesSuit = !selectedSuit || card.suit === selectedSuit
+    
+    // Only apply suit filter if Minor Arcana is selected and a suit is chosen
+    let matchesSuit = true
+    if (selectedArcana === 'minor' && selectedSuit) {
+      // Convert both to uppercase for comparison since database stores suits in uppercase
+      matchesSuit = card.suit?.toUpperCase() === selectedSuit.toUpperCase()
+    }
     
     return matchesSearch && matchesArcana && matchesSuit
   })
@@ -122,8 +128,8 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
                   key={card.id}
                   onClick={() => onCardSelect(card)}
                   className={`w-full text-left p-3 md:p-4 rounded-lg transition-colors ${
-                    selectedCard?.id === card.id 
-                      ? 'bg-purple-600 text-white' 
+                    selectedCard?.id === card.id
+                      ? 'bg-purple-600 text-white'
                       : 'bg-gray-700/50 hover:bg-gray-600'
                   }`}
                 >
@@ -135,8 +141,8 @@ export default function CardLibrary({ onCardSelect, selectedCard }: CardLibraryP
               ))
             ) : (
               <div className="text-center py-8 text-gray-400">
-                {selectedArcana || searchTerm 
-                  ? 'No cards found matching your criteria' 
+                {selectedArcana || searchTerm
+                  ? 'No cards found matching your criteria'
                   : 'Select a category to browse cards'
                 }
               </div>

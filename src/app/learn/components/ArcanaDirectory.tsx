@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from '@/components/ui/button'
-import { ArrowUp, FerrisWheel, Folder, FolderOpen } from 'lucide-react'
+
+import { FerrisWheel, Sparkle, Sparkles } from 'lucide-react'
 
 interface ArcanaDirectoryProps {
   selectedArcana: 'major' | 'minor' | null
@@ -43,9 +43,9 @@ export default function ArcanaDirectory({
           }`}
         >
           {isMinorExpanded ? (
-            <FolderOpen className="w-4 h-4" />
+            <Sparkles className="w-4 h-4" />
           ) : (
-            <Folder className="w-4 h-4" />
+            <Sparkle className="w-4 h-4" />
           )}
           <span className="font-bold">Minor Arcana</span>
           <span className="text-base opacity-75 ml-auto font-just-another-hand tracking-widest">56 cards</span>

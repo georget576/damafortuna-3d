@@ -26,6 +26,18 @@ enum SpreadType {
   CUSTOM
 }
 
+enum PostType {
+  READING
+  JOURNAL
+  GENERAL
+}
+
+enum PostStatus {
+  PUBLISHED
+  DRAFT
+  ARCHIVED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -36,10 +48,12 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts     Account[]
-  sessions     Session[]
-  readings     Reading[]
+  accounts       Account[]
+  sessions       Session[]
+  readings       Reading[]
   journalEntries JournalEntry[]
+  forumPosts     ForumPost[]
+  forumReplies   ForumReply[]
 }
 
 model Account {
@@ -116,8 +130,8 @@ model Reading {
   createdAt  DateTime   @default(now())
 
   readingCards ReadingCard[]
-  // back-relation only; no fields or references here
   journalEntry JournalEntry?
+  forumPosts   ForumPost[]
 }
 
 model ReadingCard {
@@ -139,10 +153,65 @@ model JournalEntry {
   reading   Reading @relation(fields: [readingId], references: [id])
   readingId String  @unique()
 
-  title     String?
-  slug      String?  @unique
-  notes     String
-  userNotes String?
+  title      String?
+  slug       String?     @unique
+  notes      String
+  userNotes  String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  forumPosts ForumPost[]
+}
+
+model ForumCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique()
+  description String?
+  slug        String   @unique()
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  posts ForumPost[]
+}
+
+model ForumPost {
+  id         String     @id @default(cuid())
+  title      String
+  content    String
+  excerpt    String?
+  slug       String     @unique()
+  type       PostType   @default(GENERAL)
+  status     PostStatus @default(PUBLISHED)
+  views      Int        @default(0)
+  isSticky   Boolean    @default(false)
+  isFeatured Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  category   ForumCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+
+  reading   Reading? @relation(fields: [readingId], references: [id])
+  readingId String?
+
+  journal   JournalEntry? @relation(fields: [journalId], references: [id])
+  journalId String?
+
+  replies ForumReply[]
+  tags    String[]
+}
+
+model ForumReply {
+  id        String   @id @default(cuid())
+  content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
 }

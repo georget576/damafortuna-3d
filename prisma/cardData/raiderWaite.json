@@ -617,7 +617,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 7,
        "name": "Queen of Swords",
         "description": "A comfortable Queen, with her sword held up, she holds a position of power and authority over public life and ideas. She is very intelligent and communicates her ideas, conversing with her is thought stimulating.",
@@ -629,7 +629,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 12,
        "name": "Knight of Swords",
         "description": "This Knight charges rapidly with his weapon raised, full of confidence, he displays his skilfulness and brashness, he is often seen as being arrogant. Even the horse looks frightened at what they are charging towards.",
@@ -641,7 +641,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 4,
        "name": "Page of Swords",
         "description": "A youth standing and looking over his shoulder away from the sword he holds. He looks unsure when wielding his weapon. He tried to appear as if he can easily defeat any enemy.",
@@ -653,7 +653,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 1,
       "name": "Ace of Swords",
         "description": "An upright sword, crowned at the tip, the hand coming out of the clouds holds the sword.",
@@ -665,7 +665,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 2,
        "name": "Two of Swords",
         "description": "A blindfolded woman holding 2 swords crossed over her breasts. Feeling like it is impossible to move forward.",
@@ -677,7 +677,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 3,
       "name": "Three of Swords",
         "description": "A heart pierced 3 times through, it reflects the death of something held greatly dear.",
@@ -689,7 +689,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 4,
       "name": "Four of Swords",
         "description": "Before embarking into battle, knights would commission a sarcophagus before they left and upon their safe return, they would lay in it giving a prayer for making it back home. They reflect on their mission and how thanks to fate they have survived the perils, if not they would be dead in the coffin.",
@@ -701,7 +701,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 5,
       "name": "Five of Swords",
         "description": "A man successful in battle, watching his foes anguished and departing. The sword in his left hand is now at rest. The others are clearly defeated.",
@@ -713,7 +713,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 6,
       "name": "Six of Swords",
         "description": "The calm after the storm, the passenger loads their swords onto boat, guided by the oarsman leading in the right direction to avoid danger.",
@@ -725,7 +725,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 7,
       "name": "Seven of Swords",
         "description": "A thief taking 5 of the 7 swords, while looking over his shoulder, duality of meanings as he can be taking from others to benefit himself, or he can be taking from others to prevent further harm to himself.",
@@ -737,7 +737,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 8,
        "name": "Eight of Swords",
         "description": "A maiden bound and blindfolded, similar to the one in the 2 of Swords. She is not tied to her position, she can walk, but she is surrounded by danger and cannot see the way out.",
@@ -749,7 +749,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 9,
       "name": "Nine of Swords",
         "description": "A man wakened by a dream or startled, he has great sadness and grief. 9 Swords behind him, 2 going through his back and another slicing behind his head.",
@@ -761,7 +761,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "SWORDS",
       "number": 10,
        "name": "Ten of Swords",
         "description": "A man lies face-flat on the ground with 10 swords in his back, blood runs from his lifeless and still body.",
@@ -773,7 +773,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 4,
        "name": "King of Cups",
         "description": "A calm and compassionate figure who balances logic and emotion, offering support without judgment. He represents emotional maturity and deep empathy.",
@@ -785,7 +785,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 3,
        "name": "Queen of Cups",
         "description": "Empathy, intuition, and emotional depth. The nurturing heart of the tarot.",
@@ -797,7 +797,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 12,
        "name": "Knight of Cups",
         "description": "Romantic pursuit, dreamy ideals, and emotional adventure. A quest driven by heart.",
@@ -809,7 +809,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 4,
        "name": "Page of Cups",
         "description": "Youthful creativity, emotional exploration, and intuitive nudges. A messenger of love or inspiration.",
@@ -821,7 +821,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 1,
       "name": "Ace of Cups",
         "description": "A symbol of emotional awakening, new relationships, and creative flow. Overflowing with love and spiritual nourishment.",
@@ -833,7 +833,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 2,
        "name": "Two of Cups",
         "description": "Represents harmony, mutual attraction, and balanced partnership. A powerful card for love and friendship.",
@@ -845,7 +845,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 3,
       "name": "Three of Cups",
         "description": "Celebration, friendship, and joyful gatherings. A reminder of your support system and communal joy.",
@@ -857,7 +857,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 4,
       "name": "Four of Cups",
         "description": "A card of introspection, emotional numbness, or missed opportunities. May indicate apathy or stagnation.",
@@ -869,7 +869,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 5,
       "name": "Five of Cups",
         "description": "Loss, grief, and regret. Though sorrow is present, not all is lost.",
@@ -881,7 +881,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 6,
       "name": "Six of Cups",
         "description": "Nostalgia, childhood memories, and innocence. A return to simpler times or past connections.",
@@ -893,7 +893,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 7,
       "name": "Seven of Cups",
         "description": "A card of choices, illusions, and imagination. Too many options may blur clarity.",
@@ -905,7 +905,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 8,
       "name": "Eight of Cups",
         "description": "Walking away from emotional attachments. Seeking deeper fulfilment or spiritual truth.",
@@ -917,7 +917,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 9,
       "name": "Nine of Cups",
         "description": "Emotional contentment and satisfaction. A wish fulfilled or personal joy.",
@@ -929,7 +929,7 @@
     },
     {
       "arcana": "MINOR",
-      "suit": "PENTACLES",
+      "suit": "CUPS",
       "number": 10,
        "name": "Ten of Cups",
         "description": "Harmony in relationships and emotional fulfilment. A card of long-term joy and unity.",

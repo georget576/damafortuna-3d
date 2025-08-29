@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Calendar, Edit, Save, X, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { getJournalEntries, updateJournalEntry, deleteJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
-import { generateTitleSlug } from '@/app/utils/slug'
+
 
 interface User {
   id?: string
@@ -228,7 +228,7 @@ export default function JournalContentPage() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 font-caveat-brush">Tarot Journal</h1>
+        <h1 className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 font-caveat-brush">My Readings</h1>
         <p className="text-base md:text-lg text-gray-300 mb-4 md:mb-6 font-shadows-into-light">
           Review and reflect on your past readings
         </p>

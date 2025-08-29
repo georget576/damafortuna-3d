@@ -1,5 +1,4 @@
 "use client"
-"use client"
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
@@ -57,7 +56,7 @@ export default function JournalContentPage() {
       const userId = session?.user?.id as string | undefined
       const userEmail = session?.user?.email as string | undefined
       
-      const result = await getJournalEntries(page, 10, userId, userEmail)
+      const result = await getJournalEntries(userId, userEmail, page, 10)
       
       setEntries(result.entries)
       setTotalPages(result.totalPages)
@@ -135,9 +134,10 @@ export default function JournalContentPage() {
       
       const result = await updateJournalEntry(
         editingEntry,
-        editForm.title,
-        editForm.notes,
-        editForm.userNotes,
+        {
+          title: editForm.title || undefined,
+          notes: editForm.notes
+        },
         userId,
         userEmail
       )
@@ -187,8 +187,9 @@ export default function JournalContentPage() {
     }
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (dateString: Date | string) => {
+    const date = dateString instanceof Date ? dateString : new Date(dateString)
+    return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

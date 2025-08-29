@@ -56,6 +56,7 @@ export default function JournalEntryPage() {
       </div>
     )
   }
+  
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({
     title: '',
@@ -101,21 +102,17 @@ export default function JournalEntryPage() {
       const userId = (session?.user as User)?.id
       const result = await updateJournalEntry(
         entry.id,
-        editForm.title,
-        editForm.notes,
-        editForm.userNotes,
+        {
+          title: editForm.title || undefined,
+          notes: editForm.notes
+        },
         userId
       )
 
-      if (result.success) {
+      if (result.success && result.entry) {
         toast.success('Journal entry updated successfully!')
         setEditing(false)
-        setEntry({
-          ...entry,
-          title: editForm.title,
-          notes: editForm.notes,
-          userNotes: editForm.userNotes
-        })
+        setEntry(result.entry)
       } else {
         throw new Error(result.error || 'Failed to update entry')
       }
@@ -142,10 +139,11 @@ export default function JournalEntryPage() {
     return `/journal/${entry.slug}`
   }
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: Date | string) => {
+    const date = dateString instanceof Date ? dateString : new Date(dateString)
     return (
       <span className="font-just-another-hand tracking-widest">
-        {new Date(dateString).toLocaleDateString('en-US', {
+        {date.toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
           year: 'numeric'
@@ -287,23 +285,9 @@ export default function JournalEntryPage() {
                 
                 <div className="space-y-3">
                   <div>
-                    <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Arcana</h4>
-                    <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.arcana}</p>
+                    <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Card Name</h4>
+                    <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.name}</p>
                   </div>
-                  
-                  {readingCard.card.suit && (
-                    <div>
-                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Suit</h4>
-                      <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.suit}</p>
-                    </div>
-                  )}
-                  
-                  {readingCard.card.number && (
-                    <div>
-                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Number</h4>
-                      <p className="text-sm text-gray-300 font-just-another-hand">{readingCard.card.number}</p>
-                    </div>
-                  )}
                   
                   <div>
                     <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Keywords</h4>
@@ -318,6 +302,27 @@ export default function JournalEntryPage() {
                       ))}
                     </div>
                   </div>
+
+                  {readingCard.card.description && (
+                    <div>
+                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Description</h4>
+                      <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.description}</p>
+                    </div>
+                  )}
+
+                  {readingCard.card.meaningUpright && (
+                    <div>
+                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Upright Meaning</h4>
+                      <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.meaningUpright}</p>
+                    </div>
+                  )}
+
+                  {readingCard.card.meaningReversed && (
+                    <div>
+                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Reversed Meaning</h4>
+                      <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.meaningReversed}</p>
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -378,7 +383,7 @@ export default function JournalEntryPage() {
           <Textarea
             value={editForm.userNotes}
             onChange={(e) => setEditForm({ ...editForm, userNotes: e.target.value })}
-            className="min-h-[150px] bg-gray-900/50 border-gray-600 text-white"
+            className="min-h-[150px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
             placeholder="Enter your personal notes and reflections..."
           />
         </div>

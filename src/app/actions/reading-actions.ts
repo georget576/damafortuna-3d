@@ -2,6 +2,41 @@ import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/database'
+import { SpreadType } from '@/app/types/tarot'
+
+// Type definitions
+export type JournalEntry = {
+  id: string
+  slug?: string | null
+  title?: string | null
+  notes: string
+  userNotes?: string | null
+  createdAt: string | Date
+  updatedAt: string | Date
+  reading: {
+    id: string
+    spreadType: string
+    createdAt: string | Date
+    deck?: {
+      id: string
+      name: string
+    } | null
+    readingCards: Array<{
+      id: string
+      position: number
+      isReversed: boolean
+      card: {
+        id: string
+        name: string
+        imageUrl?: string | null
+        keywords: string[]
+        description?: string | null
+        meaningUpright?: string | null
+        meaningReversed?: string | null
+      }
+    }>
+  }
+}
 
 export async function drawCards(request: { count: number; deckId?: string }) {
   try {
@@ -97,19 +132,48 @@ export async function getInterpretations(request: {
   }
 }
 
-export async function saveReading(request: {
-  readingId: string
-  title?: string
-  notes?: string
-  isPublic?: boolean
+export async function generateRandomReading(spreadType: string) {
+  try {
+    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000'
+    
+    const response = await fetch(`${baseUrl}/api/readings/generate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ spreadType }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to generate reading')
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('Error generating reading:', error)
+    throw new Error('Failed to generate reading')
+  }
+}
+
+export async function saveReading(
+  title: string,
+  spreadType: string,
+  cards: any[],
+  reading: string,
+  cardInterpretations: any[],
+  notes?: string,
   userId?: string
-}) {
+) {
   try {
     // Get the authenticated user session
     const session = await getServerSession(authOptions)
 
     // Use provided userId or fall back to authenticated user
-    let targetUserId = request.userId
+    let targetUserId = userId
 
     if (!targetUserId && session?.user?.id) {
       targetUserId = session.user.id
@@ -129,21 +193,45 @@ export async function saveReading(request: {
       return { success: false, error: 'User not found in database. Please try logging out and back in.' }
     }
 
-    // Update the reading with the provided data
-    const updatedReading = await prisma.reading.update({
-      where: { id: request.readingId },
+    // Get or create a default deck for the user
+    let deck = await prisma.deck.findFirst({
+      where: { name: 'Default Deck' }
+    })
+
+    if (!deck) {
+      deck = await prisma.deck.create({
+        data: {
+          name: 'Default Deck',
+          description: 'Default deck for new readings'
+        }
+      })
+    }
+
+    // Map spread type to Prisma enum
+    const prismaSpreadType = spreadType.toUpperCase().replace('-', '_') as any
+
+    // Create a reading record first
+    const newReading = await prisma.reading.create({
       data: {
-        journalEntry: {
-          upsert: {
-            create: {
-              notes: request.notes || '',
-              title: request.title || '',
-              userId: targetUserId
-            },
-            update: {
-              notes: request.notes,
-              title: request.title
+        spreadType: prismaSpreadType,
+        userId: targetUserId,
+        deckId: deck.id,
+        readingCards: {
+          create: cards.map((card: any) => ({
+            position: card.position,
+            isReversed: card.isReversed,
+            card: {
+              connect: {
+                id: card.cardId
+              }
             }
+          }))
+        },
+        journalEntry: {
+          create: {
+            title,
+            notes: notes || '',
+            userId: targetUserId
           }
         }
       },
@@ -161,12 +249,27 @@ export async function saveReading(request: {
             name: true
           }
         },
-        journalEntry: true
+        journalEntry: true,
+        readingCards: {
+          include: {
+            card: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+                keywords: true,
+                description: true,
+                meaningUpright: true,
+                meaningReversed: true
+              }
+            }
+          }
+        }
       }
     })
 
     revalidatePath('/journal')
-    return { success: true, reading: updatedReading }
+    return { success: true, reading: newReading }
   } catch (error) {
     console.error('Error saving reading:', error)
     return { success: false, error: 'Failed to save reading' }
@@ -222,12 +325,58 @@ export async function getJournalEntries(userId?: string, userEmail?: string, pag
             name: true
           }
         },
-        journalEntry: true
+        journalEntry: true,
+        readingCards: {
+          include: {
+            card: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true,
+                keywords: true,
+                description: true,
+                meaningUpright: true,
+                meaningReversed: true
+              }
+            }
+          }
+        }
       }
     })
 
+    // Transform the entries to match the JournalEntry type
+    const transformedEntries = entries.map(entry => ({
+      id: entry.id,
+      slug: entry.journalEntry?.slug || null,
+      title: entry.journalEntry?.title || null,
+      notes: entry.journalEntry?.notes || '',
+      userNotes: entry.journalEntry?.userNotes || null,
+      createdAt: entry.createdAt.toISOString(),
+      updatedAt: entry.journalEntry?.updatedAt?.toISOString() || entry.createdAt.toISOString(),
+      reading: {
+        id: entry.id,
+        spreadType: entry.spreadType,
+        createdAt: entry.createdAt.toISOString(),
+        deck: entry.deck,
+        readingCards: entry.readingCards.map(rc => ({
+          id: rc.id,
+          position: rc.position,
+          isReversed: rc.isReversed,
+          card: {
+            id: rc.card.id,
+            name: rc.card.name,
+            imageUrl: rc.card.imageUrl,
+            keywords: rc.card.keywords,
+            description: rc.card.description,
+            meaningUpright: rc.card.meaningUpright,
+            meaningReversed: rc.card.meaningReversed
+          }
+        }))
+      }
+    }))
+
     return {
-      entries,
+      entries: transformedEntries,
       total,
       totalPages,
       currentPage: page
@@ -268,13 +417,59 @@ export async function getJournalEntryBySlug(slug: string, userId?: string) {
                 id: true,
                 name: true
               }
+            },
+            readingCards: {
+              include: {
+                card: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    imageUrl: true,
+                    meaningUpright: true,
+                    meaningReversed: true,
+                    keywords: true
+                  }
+                }
+              }
             }
           }
         }
       }
     })
 
-    return entry
+    if (!entry) return null
+
+    // Transform the entry to match the JournalEntry type
+    return {
+      id: entry.id,
+      slug: entry.slug,
+      title: entry.title,
+      notes: entry.notes,
+      userNotes: entry.userNotes,
+      createdAt: entry.createdAt.toISOString(),
+      updatedAt: entry.updatedAt.toISOString(),
+      reading: {
+        id: entry.reading.id,
+        spreadType: entry.reading.spreadType,
+        createdAt: entry.reading.createdAt.toISOString(),
+        deck: entry.reading.deck,
+        readingCards: entry.reading.readingCards.map(rc => ({
+          id: rc.id,
+          position: rc.position,
+          isReversed: rc.isReversed,
+          card: {
+            id: rc.card.id,
+            name: rc.card.name,
+            imageUrl: rc.card.imageUrl,
+            keywords: rc.card.keywords,
+            description: rc.card.description,
+            meaningUpright: rc.card.meaningUpright,
+            meaningReversed: rc.card.meaningReversed
+          }
+        }))
+      }
+    }
   } catch (error) {
     console.error('Error fetching journal entry by slug:', error)
     return null
@@ -311,13 +506,59 @@ export async function getJournalEntry(id: string, userId?: string) {
                 id: true,
                 name: true
               }
+            },
+            readingCards: {
+              include: {
+                card: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    imageUrl: true,
+                    meaningUpright: true,
+                    meaningReversed: true,
+                    keywords: true
+                  }
+                }
+              }
             }
           }
         }
       }
     })
 
-    return entry
+    if (!entry) return null
+
+    // Transform the entry to match the JournalEntry type
+    return {
+      id: entry.id,
+      slug: entry.slug,
+      title: entry.title,
+      notes: entry.notes,
+      userNotes: entry.userNotes,
+      createdAt: entry.createdAt.toISOString(),
+      updatedAt: entry.updatedAt.toISOString(),
+      reading: {
+        id: entry.reading.id,
+        spreadType: entry.reading.spreadType,
+        createdAt: entry.reading.createdAt.toISOString(),
+        deck: entry.reading.deck,
+        readingCards: entry.reading.readingCards.map(rc => ({
+          id: rc.id,
+          position: rc.position,
+          isReversed: rc.isReversed,
+          card: {
+            id: rc.card.id,
+            name: rc.card.name,
+            imageUrl: rc.card.imageUrl,
+            keywords: rc.card.keywords,
+            description: rc.card.description,
+            meaningUpright: rc.card.meaningUpright,
+            meaningReversed: rc.card.meaningReversed
+          }
+        }))
+      }
+    }
   } catch (error) {
     console.error('Error fetching journal entry:', error)
     return null
@@ -366,14 +607,60 @@ export async function updateJournalEntry(
                 id: true,
                 name: true
               }
+            },
+            readingCards: {
+              include: {
+                card: {
+                  select: {
+                    id: true,
+                    name: true,
+                    imageUrl: true,
+                    keywords: true,
+                    description: true,
+                    meaningUpright: true,
+                    meaningReversed: true
+                  }
+                }
+              }
             }
           }
         }
       }
     })
 
+    // Transform the updated entry to match the JournalEntry type
+    const transformedEntry = {
+      id: updatedEntry.id,
+      slug: updatedEntry.slug,
+      title: updatedEntry.title,
+      notes: updatedEntry.notes,
+      userNotes: updatedEntry.userNotes,
+      createdAt: updatedEntry.createdAt.toISOString(),
+      updatedAt: updatedEntry.updatedAt.toISOString(),
+      reading: {
+        id: updatedEntry.reading.id,
+        spreadType: updatedEntry.reading.spreadType,
+        createdAt: updatedEntry.reading.createdAt.toISOString(),
+        deck: updatedEntry.reading.deck,
+        readingCards: updatedEntry.reading.readingCards.map(rc => ({
+          id: rc.id,
+          position: rc.position,
+          isReversed: rc.isReversed,
+          card: {
+            id: rc.card.id,
+            name: rc.card.name,
+            imageUrl: rc.card.imageUrl,
+            keywords: rc.card.keywords,
+            description: rc.card.description,
+            meaningUpright: rc.card.meaningUpright,
+            meaningReversed: rc.card.meaningReversed
+          }
+        }))
+      }
+    }
+
     revalidatePath('/journal')
-    return { success: true, entry: updatedEntry }
+    return { success: true, entry: transformedEntry }
   } catch (error) {
     console.error('Error updating journal entry:', error)
     return { success: false, error: 'Failed to update journal entry' }

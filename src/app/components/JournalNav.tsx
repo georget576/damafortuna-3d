@@ -30,7 +30,7 @@ export function JournalNav({ currentId }: JournalNavProps) {
       setLoading(true)
       try {
         const userId = (session?.user as User)?.id
-        const result = await getJournalEntries(1, 50, userId) // Get up to 50 entries for nav
+        const result = await getJournalEntries(userId, undefined, 1, 50) // Get up to 50 entries for nav
         setEntries(result.entries)
       } catch (error) {
         console.error('Error fetching journal entries:', error)
@@ -45,10 +45,11 @@ export function JournalNav({ currentId }: JournalNavProps) {
     }
   }, [status, (session?.user as User)?.id])
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: Date | string) => {
+    const date = dateString instanceof Date ? dateString : new Date(dateString)
     return (
       <span className="font-just-another-hand tracking-widest">
-        {new Date(dateString).toLocaleDateString('en-US', {
+        {date.toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
           year: 'numeric'

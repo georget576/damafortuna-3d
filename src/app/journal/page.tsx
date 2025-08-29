@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -257,9 +258,11 @@ export default function JournalContentPage() {
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="font-caveat-brush text-lg sm:text-2xl tarot-purple truncate">
-                        {entry.slug || entry.title || 'Untitled Reading'}
-                      </CardTitle>
+                      <Link href={`/journal/${entry.slug || entry.id}`}>
+                        <CardTitle className="font-caveat-brush text-lg sm:text-2xl tarot-purple truncate cursor-pointer hover:text-purple-200 transition-colors">
+                          {entry.slug || entry.title || 'Untitled Reading'}
+                        </CardTitle>
+                      </Link>
                       <CardDescription className="text-gray-400 mt-2 flex items-center gap-2 font-just-another-hand tracking-widest text-sm">
                         <Calendar className="h-4 w-4" />
                         {formatDate(entry.createdAt)}

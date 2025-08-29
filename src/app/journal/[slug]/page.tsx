@@ -262,7 +262,7 @@ export default function JournalEntryPage() {
             <Card key={index} className="bg-gray-800/50 border-gray-700">
               <CardHeader>
                 <CardTitle className="font-caveat-brush text-xl text-center text-purple-300">
-                  {params.slug}
+                  {entry.slug || entry.title || 'Untitled Reading'}
                   {readingCard.isReversed && (
                     <span className="ml-2 text-red-300 text-sm font-just-another-hand tracking-widest">Reversed</span>
                   )}

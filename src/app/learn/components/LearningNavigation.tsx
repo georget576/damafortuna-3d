@@ -44,7 +44,7 @@ const learningModules: LearningModule[] = [
 
 export default function LearningNavigation({ selectedModule, onModuleSelect }: LearningNavigationProps) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6 block lg:hidden">
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6 lg:hidden">
       {learningModules.map((module) => (
         <Button
           key={module.id}

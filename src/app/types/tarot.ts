@@ -39,7 +39,8 @@ export interface ReadingResponse {
   spreadType: string;
   createdAt: string;
   cards: DrawCardResponse[];
-  interpretation: string;
+  interpretation: InterpretationResponse;
   cardInterpretations: CardInterpretation[];
   userInput?: string;
+  savedToDatabase?: boolean;
 }

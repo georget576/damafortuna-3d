@@ -6,11 +6,11 @@ export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request })
   const { pathname } = request.nextUrl
 
-  // Only protect the journal route
-  const isJournalRoute = pathname.startsWith("/journal")
+  // Protect both journal and profile routes
+  const isProtectedRoute = pathname.startsWith("/journal") || pathname.startsWith("/profile")
 
-  // If accessing journal route without a token, redirect to sign in
-  if (isJournalRoute && !token) {
+  // If accessing protected route without a token, redirect to sign in
+  if (isProtectedRoute && !token) {
     const signInUrl = new URL("/auth/signin", request.url)
     signInUrl.searchParams.set("callbackUrl", pathname)
     return NextResponse.redirect(signInUrl)

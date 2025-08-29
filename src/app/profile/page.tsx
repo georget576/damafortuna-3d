@@ -115,23 +115,21 @@ export default function ProfilePage() {
     )
   }
 
-  if (!session) {
+  if (status !== 'authenticated') {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center font-caveat-brush">Authentication Required</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-center mb-4">Please sign in to view your profile.</p>
-            <Button 
-              onClick={() => window.location.href = '/auth/signin'}
-              className="w-full bg-purple-600 hover:bg-purple-700 font-caveat-brush"
-            >
-              Sign In
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="text-center bg-gray-800/50 rounded-lg p-8 max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-4 font-caveat-brush text-purple-300">Authentication Required</h2>
+          <p className="text-gray-300 mb-6 font-shadows-into-light">
+            Please sign in to view your profile.
+          </p>
+          <Button
+            onClick={() => window.location.href = '/auth/signin'}
+            className="bg-purple-600 hover:bg-purple-700 font-caveat-brush px-6 py-3"
+          >
+            Sign In
+          </Button>
+        </div>
       </div>
     )
   }

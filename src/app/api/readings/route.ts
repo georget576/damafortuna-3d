@@ -108,7 +108,10 @@ export async function POST(request: NextRequest) {
         position: card.position,
         arcana: card.card.arcana
       })),
-      interpretation: reading.journalEntry?.notes || '',
+      interpretation: {
+        reading: reading.journalEntry?.notes || '',
+        cardInterpretations: cardInterpretations
+      },
       cardInterpretations: cardInterpretations,
       userInput: reading.journalEntry?.userNotes || ''
     }
@@ -190,7 +193,10 @@ export async function GET(request: NextRequest) {
         position: card.position,
         arcana: card.card.arcana
       })),
-      interpretation: reading.journalEntry?.notes || '',
+      interpretation: {
+        reading: reading.journalEntry?.notes || '',
+        cardInterpretations: [] // This would need to be stored separately or calculated
+      },
       cardInterpretations: [], // This would need to be stored separately or calculated
       userInput: reading.journalEntry?.userNotes || ''
     }))

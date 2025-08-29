@@ -182,7 +182,7 @@ export default function JournalContentPage() {
       }
     } catch (error) {
       console.error('Error deleting journal entry:', error)
-      toast.error('Failed to delete journal entry')
+      toast.error(error instanceof Error ? error.message : 'Failed to delete journal entry')
       setDeletingEntry(null)
     }
   }
@@ -262,7 +262,7 @@ export default function JournalContentPage() {
                     <div className="flex-1 min-w-0">
                       <Link href={`/journal/${entry.slug || entry.id}`}>
                         <CardTitle className="font-caveat-brush text-lg sm:text-2xl tarot-purple truncate cursor-pointer hover:text-purple-200 transition-colors">
-                          {entry.slug || entry.title || 'Untitled Reading'}
+                          {entry.slug || 'Untitled Reading'}
                         </CardTitle>
                       </Link>
                       <CardDescription className="text-gray-400 mt-2 flex items-center gap-2 font-just-another-hand tracking-widest text-sm">

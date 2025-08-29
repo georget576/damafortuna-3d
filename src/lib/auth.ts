@@ -76,20 +76,19 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         // For OAuth providers like Google, the user ID is in the `sub` claim
         // For credentials provider, it's in user.id
-        token.id = (user as any).id || (user as any).sub
-      } else if (token.sub) {
-        // For OAuth users, the ID is in the sub claim
-        token.id = token.sub
+        const userId = (user as any).id || (user as any).sub
+        if (userId) {
+          token.sub = userId
+        }
       }
       return token
     },
 
     async session({ session, token }) {
       if (token && session.user) {
-        // Use the ID from token, which could be from OAuth or credentials
-        const userId = token.id || token.sub
-        if (userId) {
-          (session.user as any).id = userId
+        // Use the ID from token.sub which contains the user ID
+        if (token.sub) {
+          ;(session.user as any).id = token.sub
         }
       }
       return session

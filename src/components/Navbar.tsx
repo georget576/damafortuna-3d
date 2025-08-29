@@ -3,7 +3,7 @@
 import { useSession, signIn, signOut } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { LogIn, LogOut, BookOpen, GraduationCap, Diamond, Menu, X, User } from "lucide-react"
+import { LogIn, LogOut, BookOpen, GraduationCap, Diamond, Menu, X, User, Earth } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
 
@@ -42,6 +42,12 @@ export default function Navbar() {
               <Button variant="ghost" className="flex items-center space-x-2">
                 <BookOpen className="w-4 h-4" />
                 <span className="text-lg">Journal</span>
+              </Button>
+            </Link>
+             <Link href="/community" className="font-caveat-brush text-lg">
+              <Button variant="ghost" className="flex items-center space-x-2">
+                <Earth className="w-4 h-4" />
+                <span className="text-lg">Community</span>
               </Button>
             </Link>
             <Link href="/learn" className="font-caveat-brush text-lg">

@@ -1,8 +1,9 @@
+'use server'
+
 import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/database'
-import { SpreadType } from '@/app/types/tarot'
 
 // Type definitions
 export type JournalEntry = {
@@ -40,9 +41,11 @@ export type JournalEntry = {
 
 export async function drawCards(request: { count: number; deckId?: string }) {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
+    const baseUrl = process.env.NEXTAUTH_URL
+      ? process.env.NEXTAUTH_URL.replace(/\/$/, '') // Remove trailing slash
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000'
     
     const response = await fetch(`${baseUrl}/api/cards/draw`, {
       method: 'POST',
@@ -76,9 +79,11 @@ export async function createReading(readingData: {
   deckId?: string
 }) {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
+    const baseUrl = process.env.NEXTAUTH_URL
+      ? process.env.NEXTAUTH_URL.replace(/\/$/, '') // Remove trailing slash
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000'
     
     const response = await fetch(`${baseUrl}/api/readings`, {
       method: 'POST',
@@ -107,9 +112,11 @@ export async function getInterpretations(request: {
   userId?: string
 }) {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
+    const baseUrl = process.env.NEXTAUTH_URL
+      ? process.env.NEXTAUTH_URL.replace(/\/$/, '') // Remove trailing slash
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000'
     
     const response = await fetch(`${baseUrl}/api/interpretations`, {
       method: 'POST',
@@ -134,9 +141,11 @@ export async function getInterpretations(request: {
 
 export async function generateRandomReading(spreadType: string) {
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
+    const baseUrl = process.env.NEXTAUTH_URL
+      ? process.env.NEXTAUTH_URL.replace(/\/$/, '') // Remove trailing slash
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : 'http://localhost:3000'
     
     const response = await fetch(`${baseUrl}/api/readings/generate`, {
       method: 'POST',
@@ -144,7 +153,7 @@ export async function generateRandomReading(spreadType: string) {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ spreadType }),
+      body: JSON.stringify({ spreadType, includeInterpretation: true }),
     })
 
     if (!response.ok) {
@@ -171,18 +180,13 @@ export async function saveReading(
   try {
     // Get the authenticated user session
     const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.id) {
+      throw new Error('Authentication required')
+    }
 
     // Use provided userId or fall back to authenticated user
-    let targetUserId = userId
-
-    if (!targetUserId && session?.user?.id) {
-      targetUserId = session.user.id
-    }
-
-    // Require authentication - no fallback to default user
-    if (!targetUserId) {
-      return { success: false, error: 'Authentication required' }
-    }
+    let targetUserId = userId || session.user.id
 
     // Check if user exists
     const userExists = await prisma.user.findUnique({
@@ -190,7 +194,7 @@ export async function saveReading(
     })
 
     if (!userExists) {
-      return { success: false, error: 'User not found in database. Please try logging out and back in.' }
+      throw new Error('User not found in database. Please try logging out and back in.')
     }
 
     // Get or create a default deck for the user
@@ -222,7 +226,7 @@ export async function saveReading(
             isReversed: card.isReversed,
             card: {
               connect: {
-                id: card.cardId
+                id: card.cardId || card.id // Use card.cardId if available, fall back to card.id
               }
             }
           }))
@@ -230,8 +234,11 @@ export async function saveReading(
         journalEntry: {
           create: {
             title,
-            notes: notes || '',
-            userId: targetUserId
+            // Generate a slug from the first 5 words of userNotes
+            slug: notes ? notes.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').split(' ').slice(0, 5).join('-') : null,
+            notes: reading, // Use the reading parameter for notes
+            userNotes: notes || null, // Use the notes parameter for userNotes
+            userId: targetUserId // Add the required userId field
           }
         }
       },
@@ -272,14 +279,20 @@ export async function saveReading(
     return { success: true, reading: newReading }
   } catch (error) {
     console.error('Error saving reading:', error)
-    return { success: false, error: 'Failed to save reading' }
+    return { success: false, error: `Failed to save reading: ${error instanceof Error ? error.message : 'Unknown error'}` }
   }
 }
 
 export async function getJournalEntries(userId?: string, userEmail?: string, page: number = 1, limit: number = 10) {
   try {
     // Get the authenticated user session
-    const session = await getServerSession(authOptions)
+    let session
+    try {
+      session = await getServerSession(authOptions)
+    } catch (error) {
+      console.warn('Could not get server session, continuing without session:', error)
+      session = null
+    }
 
     // Use provided userId, userEmail, or fall back to authenticated user
     let user
@@ -390,7 +403,13 @@ export async function getJournalEntries(userId?: string, userEmail?: string, pag
 export async function getJournalEntryBySlug(slug: string, userId?: string) {
   try {
     // Get the authenticated user session
-    const session = await getServerSession(authOptions)
+    let session
+    try {
+      session = await getServerSession(authOptions)
+    } catch (error) {
+      console.warn('Could not get server session, continuing without session:', error)
+      session = null
+    }
 
     // Use provided userId or fall back to authenticated user
     let user
@@ -479,7 +498,13 @@ export async function getJournalEntryBySlug(slug: string, userId?: string) {
 export async function getJournalEntry(id: string, userId?: string) {
   try {
     // Get the authenticated user session
-    const session = await getServerSession(authOptions)
+    let session
+    try {
+      session = await getServerSession(authOptions)
+    } catch (error) {
+      console.warn('Could not get server session, continuing without session:', error)
+      session = null
+    }
 
     // Use provided userId or fall back to authenticated user
     let user
@@ -577,7 +602,13 @@ export async function updateJournalEntry(
 ) {
   try {
     // Get the authenticated user session
-    const session = await getServerSession(authOptions)
+    let session
+    try {
+      session = await getServerSession(authOptions)
+    } catch (error) {
+      console.warn('Could not get server session, continuing without session:', error)
+      session = null
+    }
 
     // Use provided userId, userEmail, or fall back to authenticated user
     let user
@@ -597,6 +628,10 @@ export async function updateJournalEntry(
       where: { id },
       data: {
         ...updates,
+        // Update slug if title is provided and changed
+        ...(updates.title && {
+          slug: updates.title ? updates.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').trim() : null
+        }),
         updatedAt: new Date()
       },
       include: {
@@ -670,7 +705,13 @@ export async function updateJournalEntry(
 export async function deleteJournalEntry(id: string, userId?: string, userEmail?: string) {
   try {
     // Get the authenticated user session
-    const session = await getServerSession(authOptions)
+    let session
+    try {
+      session = await getServerSession(authOptions)
+    } catch (error) {
+      console.warn('Could not get server session, continuing without session:', error)
+      session = null
+    }
 
     // Use provided userId, userEmail, or fall back to authenticated user
     let user
@@ -686,14 +727,45 @@ export async function deleteJournalEntry(id: string, userId?: string, userEmail?
       return { success: false, error: 'User not found. Please try logging out and back in.' }
     }
 
+    // First, try to find the journal entry by ID
+    let journalEntry = await prisma.journalEntry.findFirst({
+      where: {
+        id: id,
+        userId: user.id
+      }
+    })
+
+    // If not found by ID, try to find it by reading ID
+    if (!journalEntry) {
+      const reading = await prisma.reading.findFirst({
+        where: {
+          id: id,
+          userId: user.id,
+          journalEntry: { isNot: null }
+        },
+        include: {
+          journalEntry: true
+        }
+      })
+
+      if (reading && reading.journalEntry) {
+        journalEntry = reading.journalEntry
+      }
+    }
+
+    if (!journalEntry) {
+      return { success: false, error: 'Journal entry not found' }
+    }
+
+    // Delete the journal entry (Prisma will handle cascading deletes for related records)
     await prisma.journalEntry.delete({
-      where: { id }
+      where: { id: journalEntry.id }
     })
 
     revalidatePath('/journal')
     return { success: true }
   } catch (error) {
     console.error('Error deleting journal entry:', error)
-    return { success: false, error: 'Failed to delete journal entry' }
+    return { success: false, error: `Failed to delete journal entry: ${error instanceof Error ? error.message : 'Unknown error'}` }
   }
 }

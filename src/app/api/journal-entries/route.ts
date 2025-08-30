@@ -149,12 +149,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create a slug from the title
+    // Create a slug from the title (limit to 6 words)
     const slug = title
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '') // Remove special characters
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
       .trim()
+      .split(/\s+/)
+      .slice(0, 6)
+      .join('-')
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '') // Remove special characters
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
 
     // Create journal entry using unchecked create to avoid required relationship fields
     const newEntry = await prisma.journalEntry.create({

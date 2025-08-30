@@ -124,6 +124,12 @@ export default function Navbar() {
                   Journal
                 </Button>
               </Link>
+              <Link href="/community" className="block">
+                <Button variant="ghost" className="w-full justify-start font-caveat-brush text-lg">
+                  <Earth className="w-4 h-4 mr-2" />
+                  Community
+                </Button>
+              </Link>
               <Link href="/learn" className="block">
                 <Button variant="ghost" className="w-full justify-start font-caveat-brush text-lg">
                   <GraduationCap className="w-4 h-4 mr-2" />

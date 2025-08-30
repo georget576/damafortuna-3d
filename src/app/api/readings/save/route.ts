@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
         journalEntry: {
           create: {
             title,
-            // Generate a slug from the first 5 words of userNotes
-            slug: notes ? notes.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').split(' ').slice(0, 5).join('-') : null,
+            // Generate a slug from the first 6 words of userNotes
+            slug: notes ? notes.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').split(' ').slice(0, 6).join('-') : null,
             notes: reading, // Use the reading parameter for notes
             userNotes: notes || null, // Use the notes parameter for userNotes
             userId: targetUserId // Add the required userId field

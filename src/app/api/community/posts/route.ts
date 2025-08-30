@@ -95,8 +95,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const { title, content, categoryId, type } = await request.json()
-
+    const { title, content, categoryId, type, attachedReadingId } = await request.json()
+  
     if (!title || !content) {
       return NextResponse.json(
         { error: 'Title and content are required' },
@@ -104,11 +104,16 @@ export async function POST(request: Request) {
       )
     }
 
-    // Generate slug from title
+    // Generate slug from title (limit to 6 words)
     const slug = title
+      .trim()
+      .split(/\s+/)
+      .slice(0, 6)
+      .join('-')
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+      .replace(/[^a-z0-9-]/g, '') // Remove special characters
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
 
     // Check if post with this slug already exists
     const existingPost = await prisma.forumPost.findUnique({
@@ -126,8 +131,19 @@ export async function POST(request: Request) {
           excerpt: content.substring(0, 150) + '...',
           slug: uniqueSlug,
           type: type || 'GENERAL',
-          authorId: session.user.id,
-          categoryId: categoryId || null
+          author: {
+            connect: {
+              id: session.user.id
+            }
+          },
+          ...(categoryId && { category: { connect: { id: categoryId } } }),
+          ...(attachedReadingId && {
+            reading: {
+              connect: {
+                id: attachedReadingId
+              }
+            }
+          })
         },
         include: {
           author: {
@@ -144,7 +160,9 @@ export async function POST(request: Request) {
               name: true,
               slug: true
             }
-          }
+          },
+          reading: true,
+          journal: true
         }
       })
 
@@ -158,8 +176,19 @@ export async function POST(request: Request) {
         excerpt: content.substring(0, 150) + '...',
         slug,
         type: type || 'GENERAL',
-        authorId: session.user.id,
-        categoryId: categoryId || null
+        author: {
+          connect: {
+            id: session.user.id
+          }
+        },
+        ...(categoryId && { category: { connect: { id: categoryId } } }),
+        ...(attachedReadingId && {
+          reading: {
+            connect: {
+              id: attachedReadingId
+            }
+          }
+        })
       },
       include: {
         author: {
@@ -176,7 +205,9 @@ export async function POST(request: Request) {
             name: true,
             slug: true
           }
-        }
+        },
+        reading: true,
+        journal: true
       }
     })
 

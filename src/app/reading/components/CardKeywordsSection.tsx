@@ -16,7 +16,7 @@ export function CardKeywordsSection({ spreadType, reading, allTarotCards }: Card
   return (
     <Card className="bg-gray-800/50 border-gray-700">
       <CardHeader>
-        <CardTitle className="font-caveat-brush tarot-purple text-2xl">Card Keywords</CardTitle>
+        <CardTitle className="font-caveat-brush tarot-purple text-2xl">Card Energies</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
@@ -30,7 +30,7 @@ export function CardKeywordsSection({ spreadType, reading, allTarotCards }: Card
                   // Get the card data from the tarot database to access keywords
                   const tarotCard = allTarotCards.find((c: TarotCardData) => c.name === card.name);
                   if (!tarotCard || !tarotCard.keywords || tarotCard.keywords.length === 0) {
-                    return <span className="text-gray-400 text-xs">No keywords available</span>;
+                    return <span className="text-gray-400 text-base font-just-another-hand tracking-widest">No energies detected</span>;
                   }
                   return tarotCard.keywords.map((keyword: string, keywordIndex: number) => (
                     <span

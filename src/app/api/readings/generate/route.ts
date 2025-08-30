@@ -26,6 +26,72 @@ const mapStringToSpreadType = (spreadType: string): any => {
   }
 }
 
+// Helper function to generate enhanced, story-like interpretation
+function generateFullInterpretation(selectedCards: any[], availableCards: any[], spreadType: string): string {
+  const spreadIntroductions: Record<string, string> = {
+    'single': 'The universe speaks to you through this single card, offering a focused message that illuminates your current path and whispers guidance for the journey ahead.',
+    'three-card': 'As the cards unfold before you, they weave a tapestry of time - each position revealing a chapter in your story, past, present, and future flowing together like a sacred river.',
+    'celtic-cross': 'The sacred pattern of the Celtic Cross emerges, a mystical crossroads where your journey intersects with destiny, challenge, and potential. Each card illuminates a different facet of your current reality.'
+  }
+
+  const spreadConclusions: Record<string, string> = {
+    'single': 'This card serves as both mirror and compass, reflecting your inner landscape while pointing toward the wisdom that awaits your next step.',
+    'three-card': 'Remember that the past is your foundation, the present is your power, and the future is your potential - all existing in the eternal now of your consciousness.',
+    'celtic-cross': 'This reading reveals not just what is, but what could be. Trust in the divine timing of your journey and know that you are always guided and protected.'
+  }
+
+  const positionNames: Record<string, string[]> = {
+    'single': ['The Present Moment'],
+    'three-card': ['The Past', 'The Present', 'The Future'],
+    'celtic-cross': [
+      'The Present', 'The Challenge', 'The Foundation',
+      'The Recent Past', 'The Conscious Goal', 'The Unconscious',
+      'The Attitude', 'The External Environment',
+      'Hopes & Fears', 'The Outcome'
+    ]
+  }
+
+  const description = spreadIntroductions[spreadType.toLowerCase()] || 'The cards reveal their wisdom to guide you on your path.'
+  
+  let reading = `✨ ${description}\n\n`
+  
+  // Add narrative flow based on spread type
+  if (spreadType === 'three-card') {
+    reading += `📚 Your Story Unfolds:\n\n`
+  } else if (spreadType === 'celtic-cross') {
+    reading += `🔮 The Sacred Pattern:\n\n`
+  } else {
+    reading += `💫 The Message:\n\n`
+  }
+  
+  selectedCards.forEach((card, index) => {
+    const cardData = availableCards.find(c => c.id === card.cardId)
+    const cardName = cardData?.name || 'Unknown Card'
+    const cardKeywords = cardData?.keywords || []
+    const interpretation = card.isReversed ? cardData?.meaningReversed : cardData?.meaningUpright
+    
+    const positionName = positionNames[spreadType.toLowerCase()]?.[index] || `Position ${index + 1}`
+    
+    reading += `🎴 ${positionName}: ${cardName}\n`
+    
+    // Add keywords as "energies"
+    if (cardKeywords.length > 0) {
+      reading += `   Energies: ${cardKeywords.join(' • ')}\n`
+    }
+    
+    // Add the interpretation with enhanced formatting
+    reading += `   ${interpretation || 'No interpretation available for this card.'}\n\n`
+  })
+  
+  // Add conclusion
+  reading += `\n💫 ${spreadConclusions[spreadType.toLowerCase()] || 'Trust in the wisdom of the cards and your own intuition.'}\n\n`
+  
+  // Add a gentle reminder
+  reading += `🌟 Remember: Tarot is a tool for self-reflection and guidance. The true wisdom lies within you, and these cards simply help illuminate the path that already exists in your heart.`
+  
+  return reading
+}
+
 export async function POST(request: NextRequest) {
   // Get the authenticated user session (optional for generation)
   const session = await getServerSession(authOptions)
@@ -109,7 +175,15 @@ export async function POST(request: NextRequest) {
     // Only save to database if user is authenticated
     if (isAuthenticated && session?.user?.id) {
       // Create the reading in the database
-      const readingTitle = title || `${spreadType} Reading - ${new Date().toLocaleDateString()}`
+      const readingTitle = title || `New ${spreadType} Reading - ${new Date().toLocaleDateString()}`
+      
+      // Debug log for slug generation
+      console.log('Slug generation debug:', {
+        originalTitle: readingTitle,
+        words: readingTitle.trim().split(' '),
+        firstSixWords: readingTitle.trim().split(' ').slice(0, 6),
+        generatedSlug: readingTitle ? readingTitle.trim().split(' ').slice(0, 6).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '') : null
+      })
       
       reading = await prisma.reading.create({
           data: {
@@ -120,7 +194,9 @@ export async function POST(request: NextRequest) {
               create: {
                 userId: session.user.id,
                 title: readingTitle,
-                notes: includeInterpretation ? 'Auto-generated reading' : '',
+                // Generate a slug from the first 6 words of the title
+                slug: readingTitle ? readingTitle.trim().split(' ').slice(0, 6).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '') : null,
+                notes: includeInterpretation ? generateFullInterpretation(selectedCards, availableCards, spreadType) : '',
                 userNotes: null
               }
             },
@@ -173,7 +249,7 @@ export async function POST(request: NextRequest) {
         }
       }),
       interpretation: {
-        reading: reading?.journalEntry?.notes || (includeInterpretation ? 'Auto-generated reading' : ''),
+        reading: reading?.journalEntry?.notes || (includeInterpretation ? generateFullInterpretation(selectedCards, availableCards, spreadType) : ''),
         cardInterpretations: selectedCards.map(card => {
           const cardData = availableCards.find(c => c.id === card.cardId)
           const cardName = cardData?.name || 'Unknown Card'

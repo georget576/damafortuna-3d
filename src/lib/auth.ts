@@ -67,11 +67,34 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt"
   },
   secret: process.env.NEXTAUTH_SECRET,
+  
+  // Handle OAuth profile image extraction
+  events: {
+    async createUser({ user }) {
+      // For OAuth users, fetch the profile image from the provider
+      if (user.image && user.email) {
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        })
+        
+        // If user exists, update their image
+        if (existingUser) {
+          await prisma.user.update({
+            where: { email: user.email },
+            data: { image: user.image }
+          })
+        }
+      }
+    }
+  },
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout"
   },
   callbacks: {
+    // Note: The profile callback is not available in newer NextAuth versions
+    // The image extraction is now handled in the jwt callback
     async jwt({ token, user, account }) {
       if (user) {
         // For OAuth providers like Google, the user ID is in the `sub` claim
@@ -79,6 +102,20 @@ export const authOptions: NextAuthOptions = {
         const userId = (user as any).id || (user as any).sub
         if (userId) {
           token.sub = userId
+          
+          // For OAuth providers, fetch the user's image from the database
+          if (account?.provider && account.provider !== 'credentials') {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: userId },
+              select: { image: true }
+            })
+            if (dbUser?.image) {
+              token.image = dbUser.image
+            }
+          } else {
+            // For credentials provider, use the image from the user object
+            token.image = (user as any).image
+          }
         }
       }
       return token
@@ -89,6 +126,11 @@ export const authOptions: NextAuthOptions = {
         // Use the ID from token.sub which contains the user ID
         if (token.sub) {
           ;(session.user as any).id = token.sub
+        }
+        
+        // Include the user's image in the session
+        if (token.image) {
+          ;(session.user as any).image = token.image
         }
       }
       return session

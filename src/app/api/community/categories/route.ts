@@ -140,11 +140,16 @@ export async function POST(request: Request) {
       )
     }
 
-    // Generate slug from name
+    // Generate slug from name (limit to 6 words)
     const slug = name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 6)
+      .join('-')
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+      .replace(/[^a-z0-9-]/g, '') // Remove special characters
+      .replace(/-+/g, '-') // Replace multiple hyphens with single
+      .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
 
     // Check if category with this slug already exists
     const existingCategory = await prisma.forumCategory.findUnique({

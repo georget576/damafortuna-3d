@@ -95,16 +95,16 @@ export default function PostCard({ post }: PostCardProps) {
               </CardTitle>
             </Link>
             <div className="flex items-center gap-2 mt-2 text-sm text-gray-400">
-              <span className="px-2 py-1 bg-purple-900/30 text-purple-200 rounded-full text-xs">
+              <span className="px-2 py-1 bg-purple-900/30 text-purple-200 rounded-full text-base font-just-another-hand tracking-widest">
                 {getPostTypeDisplay(post.type)}
               </span>
               {post.isFeatured && (
-                <span className="px-2 py-1 bg-yellow-900/30 text-yellow-200 rounded-full text-xs">
+                <span className="px-2 py-1 bg-yellow-900/30 text-yellow-200 rounded-full text-base font-just-another-hand tracking-widest">
                   Featured
                 </span>
               )}
               {post.isSticky && (
-                <span className="px-2 py-1 bg-green-900/30 text-green-200 rounded-full text-xs">
+                <span className="px-2 py-1 bg-green-900/30 text-green-200 rounded-full text-base font-just-another-hand tracking-widest">
                   Pinned
                 </span>
               )}
@@ -125,7 +125,7 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <CardDescription className="text-gray-300 mb-4 line-clamp-3">
+        <CardDescription className="text-gray-300 mb-4 line-clamp-3 font-shadows-into-light tracking-wide">
           {post.excerpt || post.content.substring(0, 150) + '...'}
         </CardDescription>
         

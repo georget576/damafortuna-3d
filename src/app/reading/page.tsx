@@ -12,9 +12,10 @@ import {
 
 // Import all extracted components
 import HeaderSection from './components/HeaderSection'
-import { ReadingControls } from './components/ReadingControls'
 import { ReadingDisplay } from './components/ReadingDisplay'
 import { ReflectionSection } from './components/ReflectionSection'
+import { InterpretationSection } from './components/InterpretationSection'
+import { CardInfoSection } from './components/CardInfoSection'
 import { EmptyState } from './components/EmptyState'
 
 // Types for our reading data
@@ -134,25 +135,38 @@ export default function ReadingPage() {
 
         {reading ? (
           <>
-            <ReadingControls
-              spreadType={spreadType}
-              onGenerateReading={handleGenerateReading}
-              onSaveReading={handleSaveReading}
-              isLoading={isLoading}
-              isSaving={isSaving}
-              status={status}
-            />
+           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+             <div className="lg:col-span-3 space-y-6">
+               
+               <ReadingDisplay
+                 spreadType={spreadType}
+                 reading={reading}
+                 allTarotCards={allTarotCards}
+               />
+               
+               <InterpretationSection
+                 interpretation={reading?.interpretation}
+               />
+               
+               
+               <ReflectionSection
+                 reflection={userInput}
+                 onReflectionChange={setUserInput}
+                 onSaveReading={handleSaveReading}
+                 isSaving={isSaving}
+                 status={status}
+                 spreadType={spreadType}
+               />
+             </div>
              
-            <ReadingDisplay
-              spreadType={spreadType}
-              reading={reading}
-              allTarotCards={allTarotCards}
-            />
-             
-            <ReflectionSection
-              reflection={userInput}
-              onReflectionChange={setUserInput}
-            />
+             <div className="lg:col-span-1 pt-12">
+               <CardInfoSection
+                 spreadType={spreadType}
+                 reading={reading}
+                 allTarotCards={allTarotCards}
+               />
+             </div>
+           </div>
           </>
         ) : (
           <EmptyState

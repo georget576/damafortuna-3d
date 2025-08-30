@@ -102,6 +102,21 @@
   }
 }
 
+@layer base {
+  /* Custom font classes */
+  .font-caveat-brush {
+    font-family: 'Caveat Brush', cursive;
+  }
+  
+  .font-just-another-hand {
+    font-family: 'Just Another Hand', cursive;
+  }
+  
+  .font-shadows-into-light {
+    font-family: 'Shadows Into Light', cursive;
+  }
+}
+
 /* Mystical Theme Extensions */
 :root {
   --mystical-gold: 48 100% 50%;

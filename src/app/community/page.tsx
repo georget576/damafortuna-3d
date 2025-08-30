@@ -11,6 +11,7 @@ import SearchAndFilter from './components/SearchAndFilter'
 import CreatePostForm from './components/CreatePostForm'
 import PostCard from './components/PostCard'
 import EmptyState from './components/EmptyState'
+import { getJournalEntries } from '@/app/actions/reading-actions'
 
 interface ForumPost {
   id: string
@@ -56,6 +57,7 @@ export default function CommunityPage() {
   const router = useRouter()
   const [posts, setPosts] = useState<ForumPost[]>([])
   const [categories, setCategories] = useState<ForumCategory[]>([])
+  const [savedReadings, setSavedReadings] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string>('')
@@ -64,7 +66,9 @@ export default function CommunityPage() {
     title: '',
     content: '',
     categoryId: '',
-    type: 'DAILY_DRAW_REFLECTION' // Default to one of the new types
+    type: 'DAILY_DRAW_REFLECTION', // Default to one of the new types
+    attachedReadingId: undefined as string | undefined,
+    attachedCardId: undefined as string | undefined
   })
 
   // Fetch categories
@@ -116,7 +120,81 @@ export default function CommunityPage() {
     console.log('Community page mounting...')
     fetchCategories()
     fetchPosts()
+    fetchSavedReadings()
+    
+    // Check for journal slug in URL params
+    const urlParams = new URLSearchParams(window.location.search)
+    const journalSlug = urlParams.get('journalSlug')
+    const readingId = urlParams.get('readingId')
+    if (journalSlug) {
+      setShowCreateForm(true)
+      setNewPost(prev => ({
+        ...prev,
+        title: `Journal: ${journalSlug}`,
+        content: `I'd like to share my journal entry from "${journalSlug}" with the community.`,
+        attachedReadingId: readingId || undefined,
+        attachedCardId: undefined
+      }))
+    }
   }, [])
+
+  // Helper function to transform position numbers to human-readable labels
+  const transformPositionLabel = (position: number, spreadType: string): string => {
+    // Common position mappings for different spread types based on spreadLayout.ts
+    const positionMappings: Record<string, string[]> = {
+      'THREE_CARD': ['Left', 'Center', 'Right'],
+      'CELTIC_CROSS': [
+        'The Present',           // Position 0
+        'The Challenge',         // Position 1
+        'Above',                // Position 2
+        'Below',                // Position 3
+        'Right',                // Position 4
+        'Left',                 // Position 5
+        'External Influences',  // Position 6
+        'Hopes and Fears',      // Position 7
+        'Advice',               // Position 8
+        'The Outcome'           // Position 9
+      ],
+      'SINGLE': ['The Card'],
+      'ONE_CARD': ['The Card'],
+      'DAILY_DRAW': ['Daily Draw'],
+      'LOVE_SPREAD': ['Past Love', 'Present Love', 'Future Love'],
+      'CAREER_SPREAD': ['Past Career', 'Present Career', 'Future Career'],
+      'YES_NO': ['Answer'],
+      'GENERAL': ['Position 1', 'Position 2', 'Position 3']
+    }
+
+    // Get the mapping for this spread type, or fall back to general
+    const mapping = positionMappings[spreadType.toUpperCase()] || positionMappings['GENERAL']
+    
+    // Return the position label if it exists, otherwise return the position number
+    return mapping[position] || `Position ${position + 1}`
+  }
+
+  // Fetch saved readings for the current user
+  const fetchSavedReadings = async () => {
+    try {
+      const { entries } = await getJournalEntries()
+      // Transform journal entries to match SavedReading interface
+      const transformedReadings = entries.map(entry => ({
+        id: entry.reading.id,
+        title: entry.slug || entry.reading.spreadType,
+        spreadType: entry.reading.spreadType,
+        createdAt: entry.reading.createdAt,
+        cards: entry.reading.readingCards.map(rc => ({
+          id: rc.card.id,
+          name: rc.card.name,
+          imageUrl: rc.card.imageUrl,
+          isReversed: rc.isReversed,
+          position: rc.position,
+          positionLabel: transformPositionLabel(rc.position, entry.reading.spreadType)
+        }))
+      }))
+      setSavedReadings(transformedReadings)
+    } catch (error) {
+      console.error('Error fetching saved readings:', error)
+    }
+  }
 
   useEffect(() => {
     console.log('Categories state updated:', categories.length, 'categories')
@@ -147,13 +225,19 @@ export default function CommunityPage() {
       return
     }
 
+    // If a reading or card is attached, set the post type to READING
+    const postToCreate = {
+      ...newPost,
+      type: (newPost.attachedReadingId || newPost.attachedCardId) ? 'READING' : newPost.type
+    }
+
     try {
       const response = await fetch('/api/community/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newPost),
+        body: JSON.stringify(postToCreate),
       })
 
       if (response.ok) {
@@ -164,7 +248,9 @@ export default function CommunityPage() {
           title: '',
           content: '',
           categoryId: '',
-          type: 'GENERAL'
+          type: 'DAILY_DRAW_REFLECTION',
+          attachedReadingId: undefined,
+          attachedCardId: undefined
         })
         fetchPosts()
         router.push(`/community/${data.slug}`)
@@ -210,6 +296,7 @@ export default function CommunityPage() {
         showCreateForm={showCreateForm}
         setShowCreateForm={setShowCreateForm}
         categories={categories}
+        savedReadings={savedReadings}
         newPost={newPost}
         setNewPost={setNewPost}
         handleCreatePost={handleCreatePost}

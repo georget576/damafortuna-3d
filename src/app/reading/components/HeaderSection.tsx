@@ -46,6 +46,14 @@ export default function HeaderSection({
             <option value="celtic-cross">Celtic Cross</option>
           </select>
         </div>
+        
+        <button
+          onClick={onGenerateReading}
+          disabled={isLoading}
+          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-2 px-6 rounded-full font-caveat-brush transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+        >
+          {isLoading ? 'Generating...' : 'Get My Reading'}
+        </button>
       </div>
       
     </div>

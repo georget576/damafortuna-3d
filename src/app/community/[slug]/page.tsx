@@ -58,6 +58,15 @@ interface ForumPost {
     notes: string
     userNotes?: string
   }
+  card?: {
+    id: string
+    name: string
+    image: string
+    description: string
+    keywords: string[]
+    arcana: 'major' | 'minor'
+    suit?: 'cups' | 'wands' | 'swords' | 'pentacles'
+  }
   _count?: {
     replies: number
   }
@@ -256,6 +265,39 @@ export default function CommunityPostPage() {
     })
   }
 
+  // Helper function to transform position numbers to human-readable labels
+  const transformPositionLabel = (position: number, spreadType: string): string => {
+    // Common position mappings for different spread types based on spreadLayout.ts
+    const positionMappings: Record<string, string[]> = {
+      'THREE_CARD': ['Left', 'Center', 'Right'],
+      'CELTIC_CROSS': [
+        'The Present',           // Position 0
+        'The Challenge',         // Position 1
+        'Above',                // Position 2
+        'Below',                // Position 3
+        'Right',                // Position 4
+        'Left',                 // Position 5
+        'External Influences',  // Position 6
+        'Hopes and Fears',      // Position 7
+        'Advice',               // Position 8
+        'The Outcome'           // Position 9
+      ],
+      'SINGLE': ['The Card'],
+      'ONE_CARD': ['The Card'],
+      'DAILY_DRAW': ['Daily Draw'],
+      'LOVE_SPREAD': ['Past Love', 'Present Love', 'Future Love'],
+      'CAREER_SPREAD': ['Past Career', 'Present Career', 'Future Career'],
+      'YES_NO': ['Answer'],
+      'GENERAL': ['Position 1', 'Position 2', 'Position 3']
+    }
+
+    // Get the mapping for this spread type, or fall back to general
+    const mapping = positionMappings[spreadType.toUpperCase()] || positionMappings['GENERAL']
+    
+    // Return the position label if it exists, otherwise return the position number
+    return mapping[position] || `Position ${position + 1}`
+  }
+
   const getPostTypeDisplay = (type: string) => {
     switch (type) {
       case 'READING':
@@ -311,7 +353,7 @@ export default function CommunityPostPage() {
         <Button
           onClick={() => router.push('/community')}
           variant="outline"
-          className="border-gray-600 mb-4"
+          className="border-gray-600 mb-4 font-caveat-brush"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Community
@@ -321,9 +363,9 @@ export default function CommunityPostPage() {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <h1 className="text-2xl sm:text-4xl font-bold font-caveat-brush text-purple-300">
-                {post.title}
+                {post.title ? post.title.split(' ').slice(0, 6).join(' ') + (post.title.split(' ').length > 6 ? '...' : '') : 'Untitled Post'}
               </h1>
-              <span className="px-2 py-1 bg-purple-900/30 text-purple-200 rounded-full text-sm">
+              <span className="px-2 py-1 bg-purple-900/30 text-purple-200 rounded-full text-sm text-center font-just-another-hand tracking-widest">
                 {getPostTypeDisplay(post.type)}
               </span>
               {post.isFeatured && (
@@ -339,8 +381,18 @@ export default function CommunityPostPage() {
             </div>
             
             <div className="flex items-center gap-4 text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <User className="h-4 w-4" />
+              <div className="flex items-center gap-2">
+                {post.author.image ? (
+                  <img
+                    src={post.author.image}
+                    alt={post.author.name || 'Anonymous'}
+                    className="w-8 h-8 rounded-full"
+                  />
+                ) : (
+                  <div className="w-8 h-8 bg-purple-900 rounded-full flex items-center justify-center">
+                    <User className="h-4 w-4 text-purple-300" />
+                  </div>
+                )}
                 <span className="font-just-another-hand tracking-widest">
                   {post.author.name || 'Anonymous'}
                 </span>
@@ -371,7 +423,7 @@ export default function CommunityPostPage() {
               <Button
                 onClick={() => setIsEditing(true)}
                 variant="outline"
-                className="border-gray-600"
+                className="border-gray-600 font-caveat-brush"
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
@@ -379,7 +431,7 @@ export default function CommunityPostPage() {
               <Button
                 onClick={handleDeletePost}
                 variant="outline"
-                className="border-red-600 hover:bg-red-600 hover:text-white"
+                className="border-red-600 hover:bg-red-600 hover:text-white font-caveat-brush"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete
@@ -395,7 +447,7 @@ export default function CommunityPostPage() {
           {isEditing ? (
             <form onSubmit={handleEditPost} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Title</label>
+                <label className="block text-base font-medium mb-2 text-white font-just-another-hand tracking-widest">Title</label>
                 <Input
                   type="text"
                   value={editForm.title}
@@ -404,22 +456,22 @@ export default function CommunityPostPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2 text-white">Content</label>
+                <label className="block text-base font-medium mb-2 text-white font-just-another-hand tracking-widest">Content</label>
                 <Textarea
                   value={editForm.content}
                   onChange={(e) => setEditForm({ ...editForm, content: e.target.value })}
-                  className="min-h-[300px] bg-gray-900/50 border-gray-600 text-white"
+                  className="min-h-[300px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
                 />
               </div>
               <div className="flex gap-2">
-                <Button type="submit" className="bg-purple-600 hover:bg-purple-700">
+                <Button type="submit" className="bg-purple-600 hover:bg-purple-700 font-caveat-brush">
                   Save Changes
                 </Button>
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setIsEditing(false)}
-                  className="border-gray-600"
+                  className="border-gray-600 font-caveat-brush"
                 >
                   Cancel
                 </Button>
@@ -445,8 +497,8 @@ export default function CommunityPostPage() {
           </CardHeader>
           <CardContent>
             <div className="mb-4">
-              <h3 className="font-semibold text-purple-300 mb-2">Spread: {post.reading.spreadType}</h3>
-              <div className="flex flex-wrap gap-2">
+              <h3 className="font-semibold text-purple-300 mb-2 font-just-another-hand tracking-widest">Spread: {post.reading.spreadType}</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
                 {post.reading.readingCards.map((readingCard, index) => (
                   <div
                     key={index}
@@ -456,6 +508,42 @@ export default function CommunityPostPage() {
                     {readingCard.isReversed && <span className="ml-1 text-red-300">↺</span>}
                   </div>
                 ))}
+              </div>
+              
+              {/* Reading Cards Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {post.reading.readingCards
+                  .sort((a, b) => a.position - b.position)
+                  .map((readingCard) => (
+                    <div key={readingCard.id} className="text-center">
+                      <div className="mb-2">
+                        {readingCard.card.imageUrl ? (
+                          <img
+                            src={readingCard.card.imageUrl}
+                            alt={readingCard.card.name}
+                            className="w-full h-48 object-contain bg-gray-900/30 rounded-lg border border-gray-600"
+                          />
+                        ) : (
+                          <div className="w-full h-48 bg-gray-900/30 rounded-lg border border-gray-600 flex items-center justify-center">
+                            <span className="text-gray-500 text-sm">No Image</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-sm">
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="font-caveat-brush text-purple-300 bg-purple-900/30 px-2 py-1 rounded text-xs">
+                            {transformPositionLabel(readingCard.position, post.reading!.spreadType)}
+                          </span>
+                          <span className="font-caveat-brush text-white">
+                            {readingCard.card.name}
+                          </span>
+                          {readingCard.isReversed && (
+                            <span className="text-red-300 text-xs font-caveat-brush">Reversed</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           </CardContent>
@@ -488,6 +576,63 @@ export default function CommunityPostPage() {
         </Card>
       )}
 
+      {/* Individual Card Details */}
+      {post.type === 'READING' && post.card && (
+        <Card className="bg-gray-800/50 border-gray-700">
+          <CardHeader>
+            <CardTitle className="font-caveat-brush text-xl text-purple-300">
+              Attached Card
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col sm:flex-row gap-6">
+              <div className="flex-shrink-0">
+                {post.card.image ? (
+                  <img
+                    src={post.card.image}
+                    alt={post.card.name}
+                    className="w-48 h-64 object-contain bg-gray-900/30 rounded-lg border border-gray-600"
+                    onError={(e) => {
+                      e.currentTarget.src = '/rider-waite/back.jpg'
+                    }}
+                  />
+                ) : (
+                  <div className="w-48 h-64 bg-gray-900/30 rounded-lg border border-gray-600 flex items-center justify-center">
+                    <span className="text-gray-500 text-sm">No Image</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex-1">
+                <div className="mb-4">
+                  <span className="text-xs font-medium text-purple-300 bg-purple-900/30 px-2 py-1 rounded">
+                    {post.card.arcana === 'major' ? 'Major Arcana' : 'Minor Arcana'}
+                  </span>
+                  {post.card.suit && (
+                    <span className="ml-2 text-xs font-medium text-blue-300 bg-blue-900/30 px-2 py-1 rounded">
+                      {post.card.suit}
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 font-caveat-brush">{post.card.name}</h3>
+                <div className="mb-3">
+                  <span className="text-sm text-gray-400">Keywords:</span>
+                  <div className="mt-1 flex flex-wrap gap-1">
+                    {post.card.keywords.map((keyword, index) => (
+                      <span key={index} className="px-2 py-1 bg-purple-900/30 text-purple-200 rounded-full text-xs font-just-another-hand tracking-widest">
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-gray-300 leading-relaxed">
+                  <p className="mb-2"><span className="font-semibold text-purple-300">Description:</span> {post.card.description}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Reply Section */}
       <Card className="bg-gray-800/50 border-gray-700">
         <CardHeader>
@@ -502,13 +647,13 @@ export default function CommunityPostPage() {
               <Textarea
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                className="min-h-[120px] bg-gray-900/50 border-gray-600 text-white"
+                className="min-h-[120px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
                 placeholder="Write your reply..."
               />
               <div className="flex justify-end">
                 <Button
                   type="submit"
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="bg-purple-600 hover:bg-purple-700 font-caveat-brush"
                   disabled={!replyContent.trim()}
                 >
                   <Send className="h-4 w-4 mr-2" />
@@ -517,7 +662,7 @@ export default function CommunityPostPage() {
               </div>
             </form>
           ) : (
-            <div className="text-center py-4 text-gray-400">
+            <div className="text-center py-4 text-gray-400 font-shadows-into-light">
               <p>Please sign in to reply to this post.</p>
             </div>
           )}
@@ -543,7 +688,7 @@ export default function CommunityPostPage() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-purple-300">
+                        <span className="font-semibold text-purple-300 font-caveat-brush">
                           {reply.author.name || 'Anonymous'}
                         </span>
                         <span className="text-xs text-gray-500 font-just-another-hand tracking-widest">
@@ -560,7 +705,7 @@ export default function CommunityPostPage() {
             ))}
             
             {replies.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-gray-300 font-just-another-hand tracking-widest">
                 <p>No replies yet. Be the first to reply!</p>
               </div>
             )}

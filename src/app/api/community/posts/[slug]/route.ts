@@ -127,13 +127,18 @@ export async function PUT(
       )
     }
 
-    // Generate new slug if title changed
+    // Generate new slug if title changed (limit to 6 words)
     let slug = post.slug
     if (title !== post.title) {
       slug = title
+        .trim()
+        .split(/\s+/)
+        .slice(0, 6)
+        .join('-')
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
+        .replace(/[^a-z0-9-]/g, '') // Remove special characters
+        .replace(/-+/g, '-') // Replace multiple hyphens with single
+        .replace(/^-|-$/g, '') // Remove leading/trailing hyphens
       
       // Check if new slug already exists
       const existingPost = await prisma.forumPost.findUnique({

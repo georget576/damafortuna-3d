@@ -3,8 +3,14 @@ import { prisma } from '@/lib/database'
 import { InterpretationResponse, CardInterpretation } from '@/app/types/tarot'
 import { z } from 'zod'
 
-// Request validation schema
+// Request validation schema for readingId and userId
 const interpretationRequestSchema = z.object({
+  readingId: z.string(),
+  userId: z.string().optional()
+})
+
+// Schema for cards and spread type
+const cardsAndSpreadSchema = z.object({
   cards: z.array(z.object({
     id: z.string(),
     isReversed: z.boolean(),
@@ -38,10 +44,97 @@ export async function POST(request: NextRequest) {
     // Parse and validate request body
     const body = await request.json()
     const validatedData = interpretationRequestSchema.parse(body)
-    const { cards, spreadType } = validatedData
+    const { readingId, userId } = validatedData
+    
+    // First, try to find the reading by ID
+    let reading = await prisma.reading.findFirst({
+      where: {
+        id: readingId,
+        ...(userId && { userId: userId }) // Only check userId if provided
+      },
+      include: {
+        readingCards: {
+          include: {
+            card: {
+              select: {
+                id: true,
+                name: true,
+                meaningUpright: true,
+                meaningReversed: true
+              }
+            }
+          },
+          orderBy: { position: 'asc' }
+        }
+      }
+    })
+
+    // If not found by ID, try to find the reading via the journal entry
+    if (!reading) {
+      const journalEntry = await prisma.journalEntry.findFirst({
+        where: {
+          id: readingId,
+          ...(userId && { userId: userId })
+        },
+        include: {
+          reading: {
+            include: {
+              readingCards: {
+                include: {
+                  card: {
+                    select: {
+                      id: true,
+                      name: true,
+                      meaningUpright: true,
+                      meaningReversed: true
+                    }
+                  }
+                },
+                orderBy: { position: 'asc' }
+              }
+            }
+          }
+        }
+      })
+
+      if (journalEntry?.reading) {
+        reading = journalEntry.reading
+      }
+    }
+    
+    if (!reading) {
+      return NextResponse.json(
+        { error: 'Reading not found. The journal entry may not have an associated reading.' },
+        { status: 404 }
+      )
+    }
+    
+    // Map readingCards to the expected format
+    const cards = reading.readingCards.map(rc => ({
+      id: rc.card.id,
+      isReversed: rc.isReversed,
+      position: rc.position
+    }))
+    
+    // Map spread type to the expected format
+    const spreadTypeMap: Record<string, string> = {
+      'SINGLE': 'single',
+      'THREE_CARD': 'three-card',
+      'CELTIC_CROSS': 'celtic-cross'
+    }
+    
+    const spreadType = spreadTypeMap[reading.spreadType] || 'single'
+    
+    // Validate cards and spread type
+    const validatedCardsAndSpread = cardsAndSpreadSchema.parse({
+      cards,
+      spreadType
+    })
+    
+    const { cards: validatedCards, spreadType: validatedSpreadType } = validatedCardsAndSpread
     
     // Get card IDs and fetch card details
-    const cardIds = cards.map(card => card.id)
+    const cardIds = validatedCards.map(card => card.id)
     const cardDetails = await prisma.tarotCard.findMany({
       where: { id: { in: cardIds } },
       select: { id: true, name: true, meaningUpright: true, meaningReversed: true }
@@ -54,7 +147,7 @@ export async function POST(request: NextRequest) {
     })
     
     // Generate interpretations for each card
-    const cardInterpretations: CardInterpretation[] = cards.map(card => {
+    const cardInterpretations: CardInterpretation[] = validatedCards.map((card) => {
       const details = cardDetailsMap.get(card.id)
       
       if (!details) {
@@ -75,10 +168,10 @@ export async function POST(request: NextRequest) {
     })
     
     // Generate the full reading
-    const reading = generateReading(spreadType, cardInterpretations)
+    const readingText = generateReading(validatedSpreadType, cardInterpretations)
     
     return NextResponse.json({
-      reading,
+      reading: readingText,
       cardInterpretations
     } as InterpretationResponse)
     

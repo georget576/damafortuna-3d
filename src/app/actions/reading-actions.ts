@@ -12,6 +12,7 @@ export type JournalEntry = {
   title?: string | null
   notes: string
   userNotes?: string | null
+  userId: string
   createdAt: string | Date
   updatedAt: string | Date
   reading: {
@@ -128,14 +129,14 @@ export async function getInterpretations(request: {
     })
 
     if (!response.ok) {
-      throw new Error('Failed to get interpretations')
+      throw new Error(`Failed to get interpretations: ${response.status} ${response.statusText}`)
     }
 
     const data = await response.json()
     return data
   } catch (error) {
     console.error('Error getting interpretations:', error)
-    throw new Error('Failed to get interpretations')
+    throw new Error(`Failed to get interpretations: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }
 
@@ -233,9 +234,9 @@ export async function saveReading(
         },
         journalEntry: {
           create: {
-            title,
-            // Generate a slug from the first 5 words of userNotes
-            slug: notes ? notes.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').split(' ').slice(0, 5).join('-') : null,
+            title: notes ? notes.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').split(' ').slice(0, 6).join('-') : title, // Set title to be the same as slug
+            // Generate a slug from the first 6 words of userNotes
+            slug: notes ? notes.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').split(' ').slice(0, 6).join('-') : null,
             notes: reading, // Use the reading parameter for notes
             userNotes: notes || null, // Use the notes parameter for userNotes
             userId: targetUserId // Add the required userId field
@@ -364,6 +365,7 @@ export async function getJournalEntries(userId?: string, userEmail?: string, pag
       title: entry.journalEntry?.title || null,
       notes: entry.journalEntry?.notes || '',
       userNotes: entry.journalEntry?.userNotes || null,
+      userId: entry.userId,
       createdAt: entry.createdAt.toISOString(),
       updatedAt: entry.journalEntry?.updatedAt?.toISOString() || entry.createdAt.toISOString(),
       reading: {
@@ -397,6 +399,39 @@ export async function getJournalEntries(userId?: string, userEmail?: string, pag
   } catch (error) {
     console.error('Error fetching journal entries:', error)
     return { entries: [], total: 0, totalPages: 0, currentPage: page }
+  }
+}
+
+// Add type for interpretation data
+export interface InterpretationData {
+  readingId: string
+  reading: string
+  cardInterpretations: Array<{
+    position: number
+    cardName: string
+    interpretation: string
+  }>
+}
+
+export async function getJournalEntryWithInterpretation(id: string, userId?: string) {
+  try {
+    // Get the journal entry
+    const entry = await getJournalEntry(id, userId)
+    if (!entry) return null
+
+    // Get interpretation data
+    const interpretationResult = await getInterpretations({
+      readingId: entry.id,
+      userId
+    })
+
+    return {
+      ...entry,
+      interpretation: interpretationResult
+    }
+  } catch (error) {
+    console.error('Error fetching journal entry with interpretation:', error)
+    return null
   }
 }
 
@@ -466,6 +501,7 @@ export async function getJournalEntryBySlug(slug: string, userId?: string) {
       title: entry.title,
       notes: entry.notes,
       userNotes: entry.userNotes,
+      userId: user.id, // Use the user object instead of entry.reading.userId
       createdAt: entry.createdAt.toISOString(),
       updatedAt: entry.updatedAt.toISOString(),
       reading: {
@@ -561,6 +597,7 @@ export async function getJournalEntry(id: string, userId?: string) {
       title: entry.title,
       notes: entry.notes,
       userNotes: entry.userNotes,
+      userId: user.id, // Add the required userId field
       createdAt: entry.createdAt.toISOString(),
       updatedAt: entry.updatedAt.toISOString(),
       reading: {
@@ -628,9 +665,11 @@ export async function updateJournalEntry(
       where: { id },
       data: {
         ...updates,
-        // Update slug if title is provided and changed
+        // Update slug if title is provided and changed (limit to 6 words)
         ...(updates.title && {
-          slug: updates.title ? updates.title.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').trim() : null
+          slug: updates.title ? updates.title.trim().split(/\s+/).slice(0, 6).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '') : null,
+          // Set title to be the same as slug
+          title: updates.title ? updates.title.trim().split(/\s+/).slice(0, 6).join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '') : null
         }),
         updatedAt: new Date()
       },
@@ -670,6 +709,7 @@ export async function updateJournalEntry(
       title: updatedEntry.title,
       notes: updatedEntry.notes,
       userNotes: updatedEntry.userNotes,
+      userId: user.id, // Add the required userId field
       createdAt: updatedEntry.createdAt.toISOString(),
       updatedAt: updatedEntry.updatedAt.toISOString(),
       reading: {

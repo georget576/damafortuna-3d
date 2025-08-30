@@ -6,11 +6,9 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
-import { Calendar, Edit, Save, X, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
+import { Calendar, Edit, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { getJournalEntries, updateJournalEntry, deleteJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
+import { getJournalEntries, deleteJournalEntry, JournalEntry, getInterpretations, InterpretationData } from '@/app/actions/reading-actions'
 
 
 interface User {
@@ -40,14 +38,31 @@ export default function JournalContentPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalEntries, setTotalEntries] = useState(0)
-  const [editingEntry, setEditingEntry] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState({
-    title: '',
-    notes: '',
-    userNotes: ''
-  })
   const [deletingEntry, setDeletingEntry] = useState<string | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [interpretations, setInterpretations] = useState<Record<string, InterpretationData>>({})
+
+  // Fetch interpretations for an entry
+  const fetchInterpretations = async (entryId: string) => {
+    try {
+      const userId = session?.user?.id as string | undefined
+      
+      // The API now expects just readingId and userId
+      const result = await getInterpretations({
+        readingId: entryId,
+        userId
+      })
+      
+      if (result) {
+        setInterpretations(prev => ({
+          ...prev,
+          [entryId]: result
+        }))
+      }
+    } catch (error) {
+      console.error('Error fetching interpretations:', error)
+    }
+  }
 
   // Fetch journal entries
   const fetchEntries = async (page: number = 1) => {
@@ -62,6 +77,8 @@ export default function JournalContentPage() {
       setTotalPages(result.totalPages)
       setTotalEntries(result.total)
       setCurrentPage(result.currentPage)
+      
+      // Don't fetch interpretations here, let the useEffect handle it
     } catch (error) {
       console.error('Error fetching journal entries:', error)
       toast.error('Failed to load journal entries')
@@ -75,6 +92,21 @@ export default function JournalContentPage() {
       fetchEntries(currentPage)
     }
   }, [currentPage, status, session?.user])
+
+  // Fetch interpretations when entries change
+  useEffect(() => {
+    if (entries.length > 0) {
+      // Create a set of entry IDs that need interpretations
+      const entryIdsNeedingInterpretations = entries
+        .filter(entry => !interpretations[entry.id])
+        .map(entry => entry.id);
+      
+      // Fetch interpretations for all entries that need them
+      entryIdsNeedingInterpretations.forEach(entryId => {
+        fetchInterpretations(entryId);
+      });
+    }
+  }, [entries, interpretations]) // Add interpretations to dependencies
 
   // Strict authentication guard - return after hooks are called
   if (status === 'loading') {
@@ -107,53 +139,6 @@ export default function JournalContentPage() {
     )
   }
 
-  const handleEditClick = (entry: JournalEntry) => {
-    setEditingEntry(entry.id)
-    setEditForm({
-      title: entry.title || '',
-      notes: entry.notes,
-      userNotes: entry.userNotes || ''
-    })
-  }
-
-  const handleCancelEdit = () => {
-    setEditingEntry(null)
-    setEditForm({
-      title: '',
-      notes: '',
-      userNotes: ''
-    })
-  }
-
-  const handleSaveEdit = async () => {
-    if (!editingEntry) return
-
-    try {
-      const userId = session?.user?.id as string | undefined
-      const userEmail = session?.user?.email as string | undefined
-      
-      const result = await updateJournalEntry(
-        editingEntry,
-        {
-          title: editForm.title || undefined,
-          notes: editForm.notes
-        },
-        userId,
-        userEmail
-      )
-
-      if (result.success) {
-        toast.success('Journal entry updated successfully!')
-        setEditingEntry(null)
-        fetchEntries(currentPage) // Refresh entries
-      } else {
-        throw new Error(result.error || 'Failed to update entry')
-      }
-    } catch (error) {
-      console.error('Error updating journal entry:', error)
-      toast.error('Failed to update journal entry')
-    }
-  }
 
   const handleDeleteClick = (entryId: string) => {
     setDeletingEntry(entryId)
@@ -211,6 +196,32 @@ export default function JournalContentPage() {
     }
   }
 
+  const getPositionTitle = (spreadType: string, position: number) => {
+    switch (spreadType) {
+      case 'SINGLE':
+        return 'Card'
+      case 'THREE_CARD':
+        const threeCardTitles = ['Past', 'Present', 'Future']
+        return threeCardTitles[position] || `Card ${position + 1}`
+      case 'CELTIC_CROSS':
+        const celticTitles = [
+          'Current Position',
+          'Challenge',
+          'Foundation',
+          'Recent Past',
+          'Conscious Goal',
+          'Unconscious Influences',
+          'Your Attitude',
+          'External Environment',
+          'Hopes and Fears',
+          'Likely Outcome'
+        ]
+        return celticTitles[position] || `Card ${position + 1}`
+      default:
+        return `Card ${position + 1}`
+    }
+  }
+
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page)
@@ -262,7 +273,10 @@ export default function JournalContentPage() {
                     <div className="flex-1 min-w-0">
                       <Link href={`/journal/${entry.slug || entry.id}`}>
                         <CardTitle className="font-caveat-brush text-lg sm:text-2xl tarot-purple truncate cursor-pointer hover:text-purple-200 transition-colors">
-                          {entry.slug || 'Untitled Reading'}
+                          {entry.slug ?
+                            entry.slug.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') :
+                            'Untitled Reading'
+                          }
                         </CardTitle>
                       </Link>
                       <CardDescription className="text-gray-400 mt-2 flex items-center gap-2 font-just-another-hand tracking-widest text-sm">
@@ -271,44 +285,27 @@ export default function JournalContentPage() {
                       </CardDescription>
                     </div>
                     <div className="flex gap-1 sm:gap-2 flex-shrink-0">
-                      {editingEntry === entry.id ? (
-                        <>
+                      {/* Only show edit button for user's own posts */}
+                      {session?.user?.id === entry.userId && (
+                        <Link href={`/journal/${entry.slug || entry.id}`}>
                           <Button
-                            onClick={handleSaveEdit}
-                            size="sm"
-                            className="bg-green-600 hover:bg-green-700 p-2"
-                          >
-                            <Save className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            onClick={handleCancelEdit}
                             size="sm"
                             variant="outline"
                             className="border-gray-600 p-2"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </>
-                      ) : (
-                        <>
-                          <Button
-                            onClick={() => handleEditClick(entry)}
-                            size="sm"
-                            variant="outline"
-                            className="border-gray-600 p-2"
+                            title="Edit Entry"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button
-                            onClick={() => handleDeleteClick(entry.id)}
-                            size="sm"
-                            variant="outline"
-                            className="border-red-600 hover:bg-red-600 hover:text-white p-2"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </>
+                        </Link>
                       )}
+                      <Button
+                        onClick={() => handleDeleteClick(entry.id)}
+                        size="sm"
+                        variant="outline"
+                        className="border-red-600 hover:bg-red-600 hover:text-white p-2"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </CardHeader>
@@ -330,38 +327,26 @@ export default function JournalContentPage() {
                     </div>
                   </div>
 
-                  {editingEntry === entry.id ? (
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium mb-2 font-just-another-hand text-white tracking-widest">Title</label>
-                        <Input
-                          value={editForm.title}
-                          onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                          className="bg-gray-900/50 border-gray-600 text-white font-just-another-hand tracking-widest text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-white font-just-another-hand tracking-widest">Interpretation</label>
-                        <Textarea
-                          value={editForm.notes}
-                          onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
-                          className="min-h-[100px] sm:min-h-[120px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium mb-2 text-white font-just-another-hand tracking-widest">Your Notes</label>
-                        <Textarea
-                          value={editForm.userNotes}
-                          onChange={(e) => setEditForm({ ...editForm, userNotes: e.target.value })}
-                          className="min-h-[80px] sm:min-h-[100px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light text-sm"
-                        />
-                      </div>
-                    </div>
-                  ) : (
                     <div className="space-y-4">
                       <div>
                         <h4 className="font-caveat-brush text-lg text-purple-300 mb-2">Interpretation</h4>
-                        <p className="text-gray-300 text-sm leading-relaxed font-shadows-into-light">{entry.notes}</p>
+                        {interpretations[entry.id] && interpretations[entry.id].cardInterpretations ? (
+                          <div className="space-y-3">
+                            {/* Show individual card interpretations */}
+                            {interpretations[entry.id].cardInterpretations.map((cardInterpretation: any, index: number) => (
+                              <div key={index} className="border-l-2 border-purple-500 pl-3">
+                                <p className="text-purple-200 text-xs font-just-another-hand tracking-widest mb-1">
+                                  {getPositionTitle(entry.reading.spreadType, cardInterpretation.position)}: {cardInterpretation.cardName}
+                                </p>
+                                <p className="text-gray-300 text-sm leading-relaxed font-shadows-into-light">
+                                  {cardInterpretation.interpretation}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-gray-300 text-sm leading-relaxed font-shadows-into-light">{entry.notes}</p>
+                        )}
                       </div>
                       {entry.userNotes && (
                         <div>
@@ -370,7 +355,6 @@ export default function JournalContentPage() {
                         </div>
                       )}
                     </div>
-                  )}
                 </CardContent>
               </Card>
             ))}

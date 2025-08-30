@@ -6,9 +6,9 @@ import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Calendar, Edit, Save, X, ArrowLeft } from 'lucide-react'
+import { Calendar, Edit, Save, X, ArrowLeft, Share2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { getJournalEntryBySlug, updateJournalEntry, JournalEntry } from '@/app/actions/reading-actions'
+import { getJournalEntryBySlug, updateJournalEntry, JournalEntry, InterpretationData, getInterpretations } from '@/app/actions/reading-actions'
 
 import Image from 'next/image'
 
@@ -25,44 +25,38 @@ export default function JournalEntryPage() {
   const { data: session, status } = useSession()
   const [entry, setEntry] = useState<JournalEntry | null>(null)
   const [loading, setLoading] = useState(true)
-
-  // Strict authentication guard
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
-          <p className='font-just-another-hand tracking-widest text-2xl text-purple-200'>Loading...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (status !== 'authenticated') {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center bg-gray-800/50 rounded-lg p-8 max-w-md mx-auto">
-          <h2 className="text-2xl font-bold mb-4 font-caveat-brush text-purple-300">Authentication Required</h2>
-          <p className="text-gray-300 mb-6 font-shadows-into-light">
-            Please sign in to access journal entries.
-          </p>
-          <Button
-            onClick={() => window.location.href = '/auth/signin'}
-            className="bg-purple-600 hover:bg-purple-700 font-caveat-brush px-6 py-3"
-          >
-            Sign In
-          </Button>
-        </div>
-      </div>
-    )
-  }
-  
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({
     title: '',
     notes: '',
     userNotes: ''
   })
+  const [interpretations, setInterpretations] = useState<InterpretationData | null>(null)
+  const getPositionTitle = (spreadType: string, position: number) => {
+    switch (spreadType) {
+      case 'SINGLE':
+        return 'Card'
+      case 'THREE_CARD':
+        const threeCardTitles = ['Past', 'Present', 'Future']
+        return threeCardTitles[position] || `Card ${position + 1}`
+      case 'CELTIC_CROSS':
+        const celticTitles = [
+          'Current Position',
+          'Challenge',
+          'Foundation',
+          'Recent Past',
+          'Conscious Goal',
+          'Unconscious Influences',
+          'Your Attitude',
+          'External Environment',
+          'Hopes and Fears',
+          'Likely Outcome'
+        ]
+        return celticTitles[position] || `Card ${position + 1}`
+      default:
+        return `Card ${position + 1}`
+    }
+  }
 
   useEffect(() => {
     const fetchEntry = async () => {
@@ -77,6 +71,22 @@ export default function JournalEntryPage() {
             notes: result.notes,
             userNotes: result.userNotes || ''
           })
+          
+          // Fetch interpretations for this entry
+          try {
+            const interpretationResult = await getInterpretations({
+              readingId: result.id,
+              userId
+            })
+            
+            if (interpretationResult) {
+              setInterpretations(interpretationResult)
+            }
+          } catch (error) {
+            console.error('Error fetching interpretations:', error)
+            // Show a toast notification to inform the user
+            toast.error('Could not load card interpretations. The reading data may be incomplete.')
+          }
         } else {
           toast.error('Journal entry not found')
           router.push('/journal')
@@ -94,6 +104,21 @@ export default function JournalEntryPage() {
       fetchEntry()
     }
   }, [params.slug, router, status, (session?.user as User)?.id])
+
+  // Update edit form when interpretations are loaded
+  useEffect(() => {
+    if (interpretations && interpretations.cardInterpretations && entry) {
+      const formattedInterpretation = formatInterpretationsForEdit(
+        interpretations.cardInterpretations,
+        entry.reading.spreadType
+      )
+      
+      setEditForm(prev => ({
+        ...prev,
+        notes: formattedInterpretation
+      }))
+    }
+  }, [interpretations, entry])
 
   const handleSaveEdit = async () => {
     if (!entry) return
@@ -126,17 +151,37 @@ export default function JournalEntryPage() {
     if (!entry) return
     
     setEditing(false)
+    // Use the current interpretation data if available, otherwise use entry.notes
+    const notesToUse = interpretations && interpretations.cardInterpretations
+      ? formatInterpretationsForEdit(interpretations.cardInterpretations, entry.reading.spreadType)
+      : entry.notes
+    
     setEditForm({
       title: entry.title || '',
-      notes: entry.notes,
+      notes: notesToUse,
       userNotes: entry.userNotes || ''
     })
+  }
+
+  // Helper function to format interpretations for editing
+  const formatInterpretationsForEdit = (cardInterpretations: {position: number; cardName: string; interpretation: string}[], spreadType: string) => {
+    return cardInterpretations
+      .map((cardInterp) =>
+        `${getPositionTitle(spreadType, cardInterp.position)}: ${cardInterp.cardName}\n${cardInterp.interpretation}`
+      )
+      .join('\n\n')
   }
 
   // Generate slug URL for the entry (now using the current slug)
   const generateSlugUrl = () => {
     if (!entry || !entry.slug) return ''
     return `/journal/${entry.slug}`
+  }
+
+  // Format slug without dashes for community post creation
+  const formatSlugWithoutDashes = () => {
+    if (!entry || !entry.slug) return ''
+    return entry.slug.replace(/-/g, ' ')
   }
 
   const formatDate = (dateString: Date | string) => {
@@ -165,6 +210,38 @@ export default function JournalEntryPage() {
     }
   }
 
+
+  // Handle authentication and loading states in the render
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
+          <p className='font-just-another-hand tracking-widest text-2xl text-purple-200'>Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status !== 'authenticated') {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center bg-gray-800/50 rounded-lg p-8 max-w-md mx-auto">
+          <h2 className="text-2xl font-bold mb-4 font-caveat-brush text-purple-300">Authentication Required</h2>
+          <p className="text-gray-300 mb-6 font-shadows-into-light">
+            Please sign in to access journal entries.
+          </p>
+          <Button
+            onClick={() => window.location.href = '/auth/signin'}
+            className="bg-purple-600 hover:bg-purple-700 font-caveat-brush px-6 py-3"
+          >
+            Sign In
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -177,7 +254,13 @@ export default function JournalEntryPage() {
   }
 
   if (!entry) {
-    return null
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-gray-300">No journal entry found.</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -197,19 +280,37 @@ export default function JournalEntryPage() {
             {entry.slug && (
               <Button
                 onClick={() => {
-                  navigator.clipboard.writeText(entry.slug!)
-                  toast.success('Slug copied to clipboard!')
+                  // Create a new post in the community with the journal entry as context
+                  window.open(`/community?journalSlug=${formatSlugWithoutDashes()}&readingId=${entry.reading.id}`, '_blank')
                 }}
                 variant="outline"
                 className="border-gray-600 bg-purple-700 font-caveat-brush text-sm sm:text-base px-3 sm:px-4 py-2"
-                title="Copy slug to clipboard"
+                title="Create community post from this journal entry"
               >
-                🔗
+                <Share2 className='h-4 w-4 mr-2' />
+                Share
               </Button>
             )}
             <div>
               <h1 className="text-2xl sm:text-4xl font-bold font-caveat-brush text-purple-300">
-                {entry.title || 'Untitled Reading'}
+                {Array.isArray(params.slug)
+                  ? params.slug[0]?.split('-').map((word: string) =>
+                      word.charAt(0).toUpperCase() + word.slice(1)
+                    ).join(' ')
+                  : params.slug
+                    ? params.slug.split('-').map((word: string) =>
+                        word.charAt(0).toUpperCase() + word.slice(1)
+                      ).join(' ')
+                    : entry.title
+                      ? entry.title.split('-').map(word =>
+                          word.charAt(0).toUpperCase() + word.slice(1).replace(/[^a-zA-Z0-9]/g, '')
+                        ).join(' ')
+                      : entry.slug
+                        ? entry.slug.split('-').map(word =>
+                            word.charAt(0).toUpperCase() + word.slice(1).replace(/[^a-zA-Z0-9]/g, '')
+                          ).join(' ')
+                        : 'Untitled Reading'
+                }
               </h1>
               <p className="text-gray-400 flex items-center gap-2 mt-1 md:mt-2 text-sm">
                 <Calendar className="h-4 w-4" />
@@ -310,19 +411,18 @@ export default function JournalEntryPage() {
                     </div>
                   )}
 
-                  {readingCard.card.meaningUpright && (
-                    <div>
-                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Upright Meaning</h4>
-                      <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.meaningUpright}</p>
-                    </div>
-                  )}
-
-                  {readingCard.card.meaningReversed && (
+                  {/* Dynamically display meaning based on card orientation */}
+                  {readingCard.isReversed && readingCard.card.meaningReversed ? (
                     <div>
                       <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Reversed Meaning</h4>
                       <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.meaningReversed}</p>
                     </div>
-                  )}
+                  ) : readingCard.card.meaningUpright ? (
+                    <div>
+                      <h4 className="font-semibold text-purple-300 mb-1 font-caveat-brush">Upright Meaning</h4>
+                      <p className="text-sm text-gray-300 font-just-another-hand tracking-widest">{readingCard.card.meaningUpright}</p>
+                    </div>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
@@ -342,6 +442,20 @@ export default function JournalEntryPage() {
             className="min-h-[200px] bg-gray-900/50 border-gray-600 text-white font-shadows-into-light"
             placeholder="Enter your interpretation of the reading..."
           />
+        ) : interpretations && interpretations.cardInterpretations ? (
+          <div className="space-y-3">
+            {/* Show individual card interpretations */}
+            {interpretations.cardInterpretations.map((cardInterpretation, index) => (
+              <div key={index} className="border-l-2 border-purple-500 pl-3">
+                <p className="text-purple-200 text-xs font-just-another-hand tracking-widest mb-1">
+                  {getPositionTitle(entry.reading.spreadType, cardInterpretation.position)}: {cardInterpretation.cardName}
+                </p>
+                <p className="text-gray-300 text-sm leading-relaxed font-shadows-into-light">
+                  {cardInterpretation.interpretation}
+                </p>
+              </div>
+            ))}
+          </div>
         ) : (
           <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-6 font-shadows-into-light">
             <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">

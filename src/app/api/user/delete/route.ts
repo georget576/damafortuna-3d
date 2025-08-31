@@ -106,6 +106,26 @@ export async function DELETE(request: NextRequest) {
     }
 
     try {
+      // Delete user forum posts (this will cascade delete replies)
+      await prisma.forumPost.deleteMany({
+        where: { authorId: userId }
+      })
+    } catch (postsError) {
+      console.error('Error deleting forum posts:', postsError)
+      // Continue with deletion even if posts fail
+    }
+
+    try {
+      // Delete user forum replies directly (in case any don't cascade)
+      await prisma.forumReply.deleteMany({
+        where: { authorId: userId }
+      })
+    } catch (repliesError) {
+      console.error('Error deleting forum replies:', repliesError)
+      // Continue with deletion even if replies fail
+    }
+
+    try {
       // Delete accounts and sessions (these should cascade)
       await prisma.account.deleteMany({
         where: { userId }

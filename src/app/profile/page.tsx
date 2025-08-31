@@ -361,7 +361,7 @@ export default function ProfilePage() {
                       </Button>
                       
                       <p className="text-sm sm:text-base text-red-400 font-just-another-hand tracking-widest">
-                        This action cannot be undone. All your data will be permanently removed.
+                        This action cannot be undone. All your data, including posts and replies, will be permanently removed.
                       </p>
                     </div>
                   </div>

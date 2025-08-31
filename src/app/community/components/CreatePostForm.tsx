@@ -381,12 +381,12 @@ export default function CreatePostForm({
                 value={newPost.attachedCardId || ''}
                 onValueChange={(value) => setNewPost({ ...newPost, attachedCardId: value || undefined })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="font-just-another-hand tracking-widest text-white text-base">
                   <SelectValue placeholder="Select a card (optional)" />
                 </SelectTrigger>
                 <SelectContent>
                   {loadingCards ? (
-                    <SelectItem value="" disabled>Loading cards...</SelectItem>
+                    <SelectItem value="loading" disabled>Loading cards...</SelectItem>
                   ) : tarotCards.length > 0 ? (
                     tarotCards
                       .sort((a, b) => a.name.localeCompare(b.name))
@@ -396,7 +396,7 @@ export default function CreatePostForm({
                         </SelectItem>
                       ))
                   ) : (
-                    <SelectItem value="" disabled>No cards found</SelectItem>
+                    <SelectItem value="no-cards" disabled>No cards found</SelectItem>
                   )}
                 </SelectContent>
               </Select>
@@ -428,7 +428,7 @@ export default function CreatePostForm({
                         }}
                       />
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 font-just-another-hand tracking-widest">
                       <div className="mb-3">
                         <span className="text-xs font-medium text-purple-300 bg-purple-900/30 px-2 py-1 rounded">
                           {selectedCard.arcana === 'major' ? 'Major Arcana' : 'Minor Arcana'}

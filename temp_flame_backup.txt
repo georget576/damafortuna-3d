@@ -1,0 +1,281 @@
+import { useTexture } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
+import { BufferGeometry, Float32BufferAttribute,Points, AdditiveBlending, DoubleSide } from 'three';
+import { useRef, useMemo, useState } from 'react';
+
+interface FlameEffectsProps {
+  isLit: boolean;
+  position?: [number, number, number];
+  intensity?: number;
+}
+
+interface Particle {
+  x: number;
+  y: number;
+  z: number;
+  vx: number;
+  vy: number;
+  vz: number;
+  life: number;
+  maxLife: number;
+  size: number;
+}
+
+function EnhancedParticleSystem() {
+  const particlesRef = useRef<Points>(null);
+  const [particles, setParticles] = useState<Particle[]>([]);
+  const timeRef = useRef(0);
+  
+  // Initialize particles
+  useMemo(() => {
+    const initialParticles: Particle[] = [];
+    const count = 200;
+    
+    for (let i = 0; i < count; i++) {
+      initialParticles.push({
+        x: (Math.random() - 0.5) * 0.1,
+        y: Math.random() * 0.2,
+        z: (Math.random() - 0.5) * 0.1,
+        vx: (Math.random() - 0.5) * 0.002,
+        vy: 0.02 + Math.random() * 0.01,
+        vz: (Math.random() - 0.5) * 0.002,
+        life: Math.random(),
+        maxLife: 0.5 + Math.random() * 0.5,
+        size: 0.02 + Math.random() * 0.02
+      });
+    }
+    
+    setParticles(initialParticles);
+  }, []);
+  
+  // Update particle positions and properties
+  useFrame((state, delta) => {
+    if (!particlesRef.current) return;
+    
+    timeRef.current += delta;
+    const positions = particlesRef.current.geometry.attributes.position.array as Float32Array;
+    const colors = particlesRef.current.geometry.attributes.color.array as Float32Array;
+    
+    for (let i = 0; i < particles.length; i++) {
+      const particle = particles[i];
+      
+      // Update life
+      particle.life += delta * 2;
+      if (particle.life > particle.maxLife) {
+        // Reset particle
+        particle.x = (Math.random() - 0.5) * 0.1;
+        particle.y = 0;
+        particle.z = (Math.random() - 0.5) * 0.1;
+        particle.vx = (Math.random() - 0.5) * 0.002;
+        particle.vy = 0.02 + Math.random() * 0.01;
+        particle.vz = (Math.random() - 0.5) * 0.002;
+        particle.life = 0;
+        particle.size = 0.02 + Math.random() * 0.02;
+      }
+      
+      // Simple noise-like turbulence using sine waves
+      const noise = Math.sin(particle.x * 2 + timeRef.current * 3) *
+                   Math.cos(particle.y * 1.5 + timeRef.current * 2) *
+                   Math.sin(particle.z * 2.5 + timeRef.current * 4);
+      
+      // Update velocity with turbulence
+      particle.vx += (Math.random() - 0.5) * 0.001 + noise * 0.001;
+      particle.vy += 0.005; // Upward buoyancy
+      particle.vz += (Math.random() - 0.5) * 0.001 + noise * 0.001;
+      
+      // Apply damping
+      particle.vx *= 0.98;
+      particle.vz *= 0.98;
+      
+      // Update position
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      particle.z += particle.vz;
+      
+      // Calculate base index
+      const idx = i * 3;
+      
+      // Update position array
+      positions[idx] = particle.x;
+      positions[idx + 1] = particle.y;
+      positions[idx + 2] = particle.z;
+      
+      // Calculate color based on height (temperature)
+      const lifeRatio = particle.life / particle.maxLife;
+      const heightFactor = Math.max(0, 1 - particle.y / 1.5);
+      
+      if (lifeRatio > 0.7) {
+        // Hot core - white to yellow
+        colors[idx] = 1.0;     // R
+        colors[idx + 1] = 1.0; // G
+        colors[idx + 2] = 0.8; // B
+      } else if (lifeRatio > 0.4) {
+        // Middle - yellow to orange
+        colors[idx] = 1.0;     // R
+        colors[idx + 1] = 0.7; // G
+        colors[idx + 2] = 0.0; // B
+      } else {
+        // Outer - orange to red
+        colors[idx] = 1.0;     // R
+        colors[idx + 1] = 0.3; // G
+        colors[idx + 2] = 0.0; // B
+      }
+      
+      // Apply opacity based on life and height
+      const opacity = (1 - lifeRatio) * heightFactor * 0.8;
+      colors[idx + 3] = opacity;
+    }
+    
+    particlesRef.current.geometry.attributes.position.needsUpdate = true;
+    particlesRef.current.geometry.attributes.color.needsUpdate = true;
+  });
+  
+  // Create geometry and attributes
+  const geometry = useMemo(() => {
+    const geo = new BufferGeometry();
+    const positions = new Float32Array(particles.length * 3);
+    const colors = new Float32Array(particles.length * 4); // RGBA
+    
+    // Initialize positions and colors
+    for (let i = 0; i < particles.length; i++) {
+      const particle = particles[i];
+      const idx = i * 3;
+      
+      positions[idx] = particle.x;
+      positions[idx + 1] = particle.y;
+      positions[idx + 2] = particle.z;
+      
+      // Default color (will be updated in frame)
+      colors[idx] = 1.0;
+      colors[idx + 1] = 0.5;
+      colors[idx + 2] = 0.0;
+      colors[idx + 3] = 0.5;
+    }
+    
+    geo.setAttribute('position', new Float32BufferAttribute(positions, 3));
+    geo.setAttribute('color', new Float32BufferAttribute(colors, 4));
+    
+    return geo;
+  }, [particles]);
+  
+  return (
+    <points ref={particlesRef} geometry={geometry}>
+      <pointsMaterial
+        size={0.03}
+        vertexColors={true}
+        transparent={true}
+        opacity={0.8}
+        sizeAttenuation={true}
+        blending={AdditiveBlending}
+        depthWrite={false}
+      />
+    </points>
+  );
+}
+
+export function FlameEffects({ isLit, position = [0, 1.8, 0], intensity = 1.0 }: FlameEffectsProps) {
+  if (!isLit) return null;
+
+  const flameTexture = useTexture('/assets/textures/flame.png');
+  const [flickerIntensity, setFlickerIntensity] = useState(1.0);
+  
+  // Add flickering effect
+  useFrame((state) => {
+    const time = state.clock.elapsedTime;
+    // Create realistic flickering with multiple sine waves
+    const flicker = 0.9 +
+      Math.sin(time * 8) * 0.03 +
+      Math.sin(time * 15) * 0.02 +
+      Math.sin(time * 23) * 0.01 +
+      Math.sin(time * 31) * 0.005;
+    setFlickerIntensity(flicker);
+  });
+
+  return (
+    <group position={position}>
+      {/* Enhanced particle system */}
+      <EnhancedParticleSystem />
+      
+      {/* Outer flame layer - deep red with slight transparency */}
+      <mesh position={[0, 0.15, 0]}>
+        <coneGeometry args={[0.3 * intensity, 1.2 * intensity, 16]} />
+        <meshStandardMaterial
+          map={flameTexture}
+          transparent
+          opacity={0.4 * flickerIntensity}
+          emissive="#cc0000"
+          emissiveIntensity={1.2 * intensity * flickerIntensity}
+          side={DoubleSide}
+          color="#cc0000"
+          roughness={0.8}
+          metalness={0.1}
+        />
+      </mesh>
+      
+      {/* Middle flame layer - orange-red */}
+      <mesh position={[0, 0.08, 0]}>
+        <coneGeometry args={[0.22 * intensity, 0.9 * intensity, 14]} />
+        <meshStandardMaterial
+          map={flameTexture}
+          transparent
+          opacity={0.6 * flickerIntensity}
+          emissive="#ff4400"
+          emissiveIntensity={1.8 * intensity * flickerIntensity}
+          color="#ff4400"
+          side={DoubleSide}
+          roughness={0.6}
+          metalness={0.2}
+        />
+      </mesh>
+      
+      {/* Inner flame layer - bright orange-yellow */}
+      <mesh position={[0, 0.02, 0]}>
+        <coneGeometry args={[0.15 * intensity, 0.6 * intensity, 12]} />
+        <meshStandardMaterial
+          map={flameTexture}
+          transparent
+          opacity={0.8 * flickerIntensity}
+          emissive="#ff8800"
+          emissiveIntensity={2.5 * intensity * flickerIntensity}
+          color="#ff8800"
+          side={DoubleSide}
+          roughness={0.4}
+          metalness={0.3}
+        />
+      </mesh>
+      
+      {/* Core flame - bright white-yellow */}
+      <mesh position={[0, -0.05, 0]}>
+        <coneGeometry args={[0.08 * intensity, 0.3 * intensity, 10]} />
+        <meshStandardMaterial
+          color="#ffffaa"
+          transparent
+          opacity={0.9 * flickerIntensity}
+          emissive="#ffffff"
+          emissiveIntensity={3.5 * intensity * flickerIntensity}
+          side={DoubleSide}
+          roughness={0.2}
+          metalness={0.4}
+        />
+      </mesh>
+      
+      {/* Dynamic point light that flickers */}
+      <pointLight
+        position={[0, 0.4 * intensity, 0]}
+        intensity={4 * intensity * flickerIntensity}
+        color="#ffaa66"
+        distance={3}
+        decay={3}
+      />
+      
+      {/* Additional ambient light for glow */}
+      <pointLight
+        position={[0, 0.2 * intensity, 0]}
+        intensity={1.5 * intensity * flickerIntensity}
+        color="#ff6600"
+        distance={2}
+        decay={4}
+      />
+    </group>
+  );
+}

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { JournalNav } from '../components/JournalNav'
+import { JournalNav } from './components/JournalNav'
 
 interface JournalLayoutProps {
   children: ReactNode

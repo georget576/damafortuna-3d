@@ -1,6 +1,6 @@
 'use client'
 
-import { TarotReader3D } from '@/app/components/TarotReader3D'
+import { TarotReader3D } from "./TarotReader3D"
 import { DrawCardResponse, InterpretationResponse, SpreadType, TarotCardData, SPREAD_TYPE_DESCRIPTIONS } from '@/app/types/tarot'
 
 interface ReadingDisplayProps {

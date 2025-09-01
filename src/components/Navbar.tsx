@@ -17,7 +17,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/home" className="flex items-center space-x-2">
               <Image
                 src="/logo.png"
                 alt="DamaFortuna Logo"

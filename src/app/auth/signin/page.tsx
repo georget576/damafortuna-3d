@@ -13,7 +13,7 @@ export default function SignIn() {
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
   
-  const callbackUrl = searchParams.get("callbackUrl") || "/"
+  const callbackUrl = searchParams.get("callbackUrl") || "/home"
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
@@ -31,7 +31,7 @@ export default function SignIn() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href="/home" className="flex items-center space-x-2">
               <Image
                 src="/logo.png"
                 alt="DamaFortuna Logo"

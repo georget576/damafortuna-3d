@@ -90,7 +90,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/signin",
-    signOut: "/auth/signout"
+    signOut: "/home"
   },
   callbacks: {
     // Note: The profile callback is not available in newer NextAuth versions
@@ -146,9 +146,13 @@ export const authOptions: NextAuthOptions = {
         : authUrl
 
       // Special handling for Google OAuth callback
-      if (url.includes('/api/auth/callback/google')) return url
+      if (url.includes('/api/auth/callback/google')) return '/home'
+      
+      // If no callback URL is specified, default to /home
+      if (url === '/') return '/home'
+      
       // Default to the base URL if callback URL is invalid
-      return url.startsWith("/") || url.startsWith(secureBaseUrl) ? url : `${secureBaseUrl}${url}`
+      return url.startsWith("/") || url.startsWith(secureBaseUrl) ? url : `${secureBaseUrl}/home`
     }
   }
 }
